@@ -9,6 +9,8 @@ import { Button, Card, Divider, Modal, Select, Tag } from 'antd';
 import '@/style/categories.css';
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
+import { GET_CATEGORY_BY_NAME_QUERY } from '@/lib/graphql/query';
+import { Categories } from '@/utils/types/product';
 
 const listProduct = [
   {
@@ -33,9 +35,22 @@ const listProduct = [
       'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   },
 ];
-const Category = ({ category }: { category: string }) => {
+const Category = ({ category: name }: { category: string }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [product, setProduct] = React.useState({} as any);
+
+  const { data, loading, error } = useQuery(GET_CATEGORY_BY_NAME_QUERY, {
+    variables: { name },
+  });
+  const category = _.get<Categories>(data, 'getCategoryByName', {} as Categories);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    throw new Error('Error: ' + error.message);
+  }
 
   const openProductModal = (product: any) => {
     return (
@@ -79,17 +94,11 @@ const Category = ({ category }: { category: string }) => {
       <div className='p-6'>
         <div className='flex category__primary p-12 text-white rounded-lg before:rounded-lg'>
           <div className='mr-12 z-50'>
-            <Image
-              src='https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-              width={300}
-              alt=''
-              height={300}
-              className='rounded-3xl'
-            />
+            <Image src={category.image} width={300} alt='' height={300} className='rounded-3xl' />
           </div>
           <div className='z-50'>
-            <h1 className='text-6xl tracking-wider font-bold'>{category}</h1>
-            <p className='mt-6 mb-6 text-lg font-medium opacity-80'>Description: some thing about {category}</p>
+            <h1 className='text-6xl tracking-wider font-bold'>{category.name}</h1>
+            <p className='mt-6 mb-6 text-lg font-medium opacity-80'>Description: some thing about {category.name}</p>
             <p>Total Product: 13</p>
           </div>
           <Link
@@ -117,7 +126,7 @@ const Category = ({ category }: { category: string }) => {
         </div>
         <div className='category__products'>
           <div className='grid grid-cols-5 gap-8'>
-            {_.map(listProduct, (product) => {
+            {_.map(category.products, (product) => {
               return (
                 <Card
                   key={product.id}
@@ -128,7 +137,7 @@ const Category = ({ category }: { category: string }) => {
                   hoverable
                   cover={
                     <div>
-                      <Image src={product.image} width={150} height={150} alt='' className='w-full' />
+                      <Image src={product.images[0].imageUrl} width={150} height={150} alt='' className='w-full' />
                     </div>
                   }
                 >

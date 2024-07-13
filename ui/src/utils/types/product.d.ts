@@ -14,6 +14,7 @@ export type Categories = {
   name: NameOfCategories;
   image: string;
   description: string;
+  products: Product[];
 };
 
 export type ProductImage = {

@@ -11,8 +11,10 @@ export const GET_PRODUCT_BY_CATEGORY_QUERY = getProductsByCategory;
 
 // Categories quey
 import { getAllCategories } from './_get-all-categories';
+import { getCategoryByName } from './_get-category-by-name';
 
 export const GET_ALL_CATEGORIES_QUERY = getAllCategories;
+export const GET_CATEGORY_BY_NAME_QUERY = getCategoryByName;
 
 // User query
 import getUserByUsername from './_get-user-by-username';

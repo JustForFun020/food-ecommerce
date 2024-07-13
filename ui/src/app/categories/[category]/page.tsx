@@ -5,7 +5,8 @@ const Category = dynamic(() => import('@/components/Categories/Category'), { ssr
 
 const CategoryPage = ({ params }: { params: { category: string } }) => {
   const { category } = params;
-  return <Category category={category} />;
+  const validCategory = decodeURIComponent(category);
+  return <Category category={validCategory} />;
 };
 
 export default CategoryPage;

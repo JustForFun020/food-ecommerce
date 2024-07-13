@@ -20,4 +20,12 @@ export class CategoriesService {
       relations: ['products'],
     });
   }
+
+  async getCategoryByName(name: string) {
+    const category = await this.categoriesRepository.findOne({
+      where: { name },
+      relations: ['products', 'products.images', 'products.rates'],
+    });
+    return category;
+  }
 }

@@ -22,6 +22,7 @@ export const PRODUCT_FIELD = gql`
     price
     description
     amount
+    averageRate
     images {
       imageUrl
     }
@@ -89,5 +90,24 @@ export const CART_PRODUCT_FILED = gql`
       }
     }
     quantity
+  }
+`;
+
+export const CATEGORY_FIELD = gql`
+  fragment categoryField on Categories {
+    id
+    name
+    description
+    image
+    products {
+      name
+      id
+      description
+      price
+      images {
+        imageUrl
+      }
+      averageRate
+    }
   }
 `;
