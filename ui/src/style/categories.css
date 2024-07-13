@@ -1,0 +1,23 @@
+.category__primary {
+    background: url('https://images.pexels.com/photos/1603901/pexels-photo-1603901.jpeg') no-repeat;
+    background-position: right;
+    background-size: cover;
+    position: relative;
+}
+
+.category__primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.category__products {
+    background: url('https://img.freepik.com/premium-vector/food-icon_759699-41.jpg?w=1000') no-repeat;
+    background-position: right;
+    background-size: contain;
+}
+
