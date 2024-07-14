@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import React from 'react';
 import Header from '../Header';
-import { Button, Divider, Image, Space, Tooltip } from 'antd';
+import {  Divider, Image, Space } from 'antd';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_CATEGORIES_QUERY } from '@/lib/graphql/query';
 import { Categories as CategoriesType } from '@/utils/types/product';

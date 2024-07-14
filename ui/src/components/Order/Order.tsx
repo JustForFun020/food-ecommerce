@@ -5,16 +5,15 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Header from '../Header';
 import '@/style/order.css';
 import Link from 'next/link';
-import { Button, Divider, Drawer, Form, Input, Layout, Modal, Tag } from 'antd';
+import { Button, Layout, Tag } from 'antd';
 import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
-import { GET_ALL_PRODUCTS_QUERY, GET_ALL_USER_CART } from '@/lib/graphql/query';
+import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import { DELETE_CART_MUTATION, UPDATE_BASIC_INFORMATION_CART_MUTATION } from '@/lib/graphql/mutation';
+import { DELETE_CART_MUTATION } from '@/lib/graphql/mutation';
 import { Cart } from '@/utils/types/cart';
 import EditCart from './EditCart';
 import Checkout from './Checkout';
-import { redirect } from 'next/navigation';
 
 const Order = () => {
   const [isVisitableEditCart, setIsVisitableEditCart] = React.useState(false);

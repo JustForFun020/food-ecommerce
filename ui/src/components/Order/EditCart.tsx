@@ -9,7 +9,6 @@ import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { setBasicInformationCart, setProductQuantity } from '@/lib/redux/cart/reducer';
 import { AppDispatch, RootState } from '@/utils/types/redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { revalidatePath } from 'next/cache';
 
 interface EditCartProps extends PropsFromRedux {
   selectedCart: Cart;

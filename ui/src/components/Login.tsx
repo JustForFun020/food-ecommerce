@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useActionState, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, ConfigProvider, Form, Input, notification } from 'antd';
 import Link from 'next/link';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { LOGIN_MUTATION } from '@/lib/graphql/mutation';
 import '@/style/auth.css';
 import { useRouter } from 'next/navigation';
-import { useAuththor } from '@/lib/hook/useAuththor';
 import { jwtDecode } from 'jwt-decode';
 import { useAppDispatch } from '@/lib/hook/useAppDispatch';
 import { getLoginInfo } from '@/lib/redux/user/reducer';
