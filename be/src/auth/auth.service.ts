@@ -34,9 +34,10 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const { username } = loginDto;
+    const { username, password } = loginDto;
     const user = await this.userRepository.findOne({ where: { username } });
-    if (!user) {
+    const isPassword = await bcrypt.compare(password, user.password);
+    if (!user || !isPassword) {
       throw new UnauthorizedException('Invalid credentials');
     }
 

@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { CategoriesService } from './categories.service';
 import { Public } from 'src/auth/decorator/isPublic.decorator';
 import { Categories } from './entity/categories.entity';
@@ -15,5 +15,11 @@ export class CategoriesResolver {
   @Query(() => [Categories])
   async getCategories() {
     return await this.categoriesService.getCategories();
+  }
+
+  @Public()
+  @Query(() => Categories)
+  async getCategoryByName(@Args('name') name: string) {
+    return await this.categoriesService.getCategoryByName(name);
   }
 }

@@ -47,4 +47,17 @@ export class Product extends AbstractEntity<Product> {
   @ManyToMany(() => ProductTag, (ptag) => ptag.products)
   @Field(() => [ProductTag])
   tags: ProductTag[];
+
+  @Field()
+  get averageRate(): number {
+    if (!this.rates || this.rates.length === 0) {
+      return 0;
+    }
+    return parseFloat(
+      (
+        this.rates.reduce((acc, rate) => acc + rate.score, 0) /
+        this.rates.length
+      ).toFixed(2),
+    );
+  }
 }

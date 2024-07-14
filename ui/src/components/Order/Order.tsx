@@ -25,11 +25,11 @@ const Order = () => {
 
   const { loading, data: getAllUserCarts } = useQuery(GET_ALL_USER_CART, {
     variables: {
-      uid: currentUser.id,
+      uid: Number(currentUser?.id),
     },
   });
   const [deleteCart, { loading: deleteCartLoading }] = useMutation(DELETE_CART_MUTATION, {
-    refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: currentUser.id } }],
+    refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: Number(currentUser?.id) } }],
   });
 
   const carts = _.get<Cart[]>(getAllUserCarts, 'getAllUserCarts', []);
