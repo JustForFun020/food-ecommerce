@@ -4,44 +4,36 @@ import _ from 'lodash';
 import React, { Fragment } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
-import Image from 'next/image';
-import { Button, Card, Divider, Modal, Select, Tag } from 'antd';
+import { Button, Card, Divider, Modal, Select, Tag, Image, Space, message } from 'antd';
 import '@/style/categories.css';
 import Link from 'next/link';
 import { useQuery } from '@apollo/client';
 import { GET_CATEGORY_BY_NAME_QUERY } from '@/lib/graphql/query';
-import { Categories } from '@/utils/types/product';
+import { Categories, Product } from '@/utils/types/product';
+import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 
-const listProduct = [
-  {
-    id: 1,
-    name: 'Product 1',
-    price: 100,
-    image:
-      'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 2,
-    name: 'Product 2',
-    price: 200,
-    image:
-      'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: 3,
-    name: 'Product 3',
-    price: 300,
-    image:
-      'https://images.pexels.com/photos/1343504/pexels-photo-1343504.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-];
 const Category = ({ category: name }: { category: string }) => {
   const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [product, setProduct] = React.useState({} as any);
+  const [product, setProduct] = React.useState<Product>();
+  const [currentCategories, setCurrentCategories] = React.useState<Categories>({} as Categories);
 
   const { data, loading, error } = useQuery(GET_CATEGORY_BY_NAME_QUERY, {
     variables: { name },
+    onCompleted: (data) => {
+      const category = _.get<Categories>(data, 'getCategoryByName', {} as Categories);
+      setCurrentCategories(category);
+    },
   });
+  const { addProductToCart } = useAddProductToCart(undefined, product?.id ?? 0, 1, {
+    handleCompleted(res) {
+      setIsModalVisible(false);
+      message.success('Product added to cart');
+    },
+    handleError(error) {
+      message.error(error?.message ?? '');
+    },
+  });
+
   const category = _.get<Categories>(data, 'getCategoryByName', {} as Categories);
 
   if (loading) {
@@ -52,12 +44,27 @@ const Category = ({ category: name }: { category: string }) => {
     throw new Error('Error: ' + error.message);
   }
 
-  const openProductModal = (product: any) => {
+  const handleFilterProduct = (value: string) => {
+    switch (value) {
+      case 'price-low':
+        return setCurrentCategories({ ...category, products: _.orderBy(category.products, ['price'], ['asc']) });
+      case 'price-high':
+        return setCurrentCategories({ ...category, products: _.orderBy(category.products, ['price'], ['desc']) });
+      case 'rating-low':
+        return setCurrentCategories({ ...category, products: _.orderBy(category.products, ['rating'], ['asc']) });
+      case 'rating-high':
+        return setCurrentCategories({ ...category, products: _.orderBy(category.products, ['rating'], ['desc']) });
+      default:
+        return category.products;
+    }
+  };
+
+  const openProductModal = (product: Product) => {
     return (
       <Modal
         title={
           <div className='mb-8'>
-            <p className='text-2xl'>{product.name}</p>
+            <p className='text-2xl'>{product?.name}</p>
             <div>
               <Tag color='red'>Best seller</Tag>
               <Tag color='green'>Best seller</Tag>
@@ -66,7 +73,7 @@ const Category = ({ category: name }: { category: string }) => {
         }
         open={isModalVisible}
         footer={[
-          <Button key='add--btn' type='primary'>
+          <Button key='add--btn' type='primary' onClick={() => addProductToCart()}>
             Add to cart
           </Button>,
         ]}
@@ -75,11 +82,11 @@ const Category = ({ category: name }: { category: string }) => {
       >
         <div className='flex gap-4'>
           <div>
-            <Image src={product.image} alt='' width={150} height={150} className='w-full rounded-lg' />
+            <Image src={product?.images[0].imageUrl} alt='' width={150} height={150} className='w-full rounded-lg' />
           </div>
           <div>
-            <p>About product</p>
-            <p>Price: {product.price}</p>
+            <p>{product?.description}</p>
+            <p>Price: {product?.price}</p>
           </div>
         </div>
       </Modal>
@@ -92,18 +99,18 @@ const Category = ({ category: name }: { category: string }) => {
         <Header />
       </header>
       <div className='p-6'>
-        <div className='flex category__primary p-12 text-white rounded-lg before:rounded-lg'>
+        <div className='flex category__primary p-12 text-white rounded-lg before:rounded-lg z-auto'>
           <div className='mr-12 z-50'>
-            <Image src={category.image} width={300} alt='' height={300} className='rounded-3xl' />
+            <Image src={currentCategories.image} width={300} alt='' height={300} className='rounded-3xl' />
           </div>
           <div className='z-50'>
-            <h1 className='text-6xl tracking-wider font-bold'>{category.name}</h1>
-            <p className='mt-6 mb-6 text-lg font-medium opacity-80'>Description: some thing about {category.name}</p>
-            <p>Total Product: 13</p>
+            <h1 className='text-6xl tracking-wider font-bold'>{currentCategories.name}</h1>
+            <p className='mt-6 mb-6 text-lg font-medium opacity-80'>{currentCategories.description}</p>
+            <p>Total Product: {currentCategories.products?.length ?? 0}</p>
           </div>
           <Link
             href='/categories'
-            className='absolute z-40 right-8 top-8 p-2 border border-slate-400 bg-[rgba(0,0,0,.3)] hover:bg-[rgba(0,0,0,.6)] rounded-xl transition-all duration-300'
+            className='absolute z-[21378213] right-8 top-8 p-2 border border-slate-400 bg-[rgba(0,0,0,.3)] hover:bg-[rgba(0,0,0,.6)] rounded-xl transition-all duration-300'
           >
             View all categories
           </Link>
@@ -111,47 +118,36 @@ const Category = ({ category: name }: { category: string }) => {
         <Divider />
         <div className='gap-4 grid grid-cols-8 mt-8 mb-8'>
           <p className='opacity-70 font-medium'>Filter Product: </p>
-          <Select placeholder='Sort by price'>
-            <Select.Option value='low'>Low to high</Select.Option>
-            <Select.Option value='high'>High to low</Select.Option>
-          </Select>
-          <Select placeholder='Sort by buy amount'>
-            <Select.Option value='low'>Low to high</Select.Option>
-            <Select.Option value='high'>High to low</Select.Option>
-          </Select>
-          <Select placeholder='Sort by population'>
-            <Select.Option value='low'>Low to high</Select.Option>
-            <Select.Option value='high'>High to low</Select.Option>
+          <Select placeholder='Sort by product' onChange={(e) => handleFilterProduct(e)}>
+            <Select.Option value='price-low'>Price low to high</Select.Option>
+            <Select.Option value='price-high'>Price high to low</Select.Option>
+            <Select.Option value='rating-low'>Rating low to high</Select.Option>
+            <Select.Option value='rating-high'>Rating high to low</Select.Option>
           </Select>
         </div>
-        <div className='category__products'>
-          <div className='grid grid-cols-5 gap-8'>
-            {_.map(category.products, (product) => {
-              return (
-                <Card
-                  key={product.id}
-                  onClick={() => {
-                    setIsModalVisible(true);
-                    setProduct(product);
-                  }}
-                  hoverable
-                  cover={
-                    <div>
-                      <Image src={product.images[0].imageUrl} width={150} height={150} alt='' className='w-full' />
-                    </div>
-                  }
-                >
-                  <Card.Meta title={product.name} description={<p>Price: {product.price}</p>} />
-                </Card>
-              );
-            })}
-          </div>
-        </div>
+        <Space className='category__products w-full'>
+          {_.map(currentCategories.products, (product) => {
+            return (
+              <Card
+                key={product.id}
+                onClick={() => {
+                  setIsModalVisible(true);
+                  setProduct(product);
+                }}
+                hoverable
+                className='w-[200px]'
+                cover={<Image preview={false} src={product.images[0].imageUrl} height={150} alt='' />}
+              >
+                <Card.Meta title={product.name} description={<p>Price: {product.price}</p>} />
+              </Card>
+            );
+          })}
+        </Space>
       </div>
       <footer className='p-6 bg-gray-200'>
         <Footer />
       </footer>
-      {openProductModal(product)}
+      {openProductModal(product as Product)}
     </main>
   );
 };

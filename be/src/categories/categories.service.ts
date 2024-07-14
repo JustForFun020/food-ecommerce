@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categories } from './entity/categories.entity';
 import { Repository } from 'typeorm';
@@ -11,21 +11,29 @@ export class CategoriesService {
   ) {}
 
   async getCategories() {
-    return await this.categoriesRepository.find();
-  }
-
-  async getCategory(name: string) {
     return await this.categoriesRepository.find({
-      where: { name },
-      relations: ['products'],
+      relations: [
+        'products',
+        'products.images',
+        'products.rates',
+        'products.categories',
+      ],
     });
   }
 
   async getCategoryByName(name: string) {
     const category = await this.categoriesRepository.findOne({
       where: { name },
-      relations: ['products', 'products.images', 'products.rates'],
+      relations: [
+        'products',
+        'products.images',
+        'products.rates',
+        'products.categories',
+      ],
     });
+    if (!category) {
+      throw new HttpException('Category not found', 404);
+    }
     return category;
   }
 }

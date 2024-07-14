@@ -3,10 +3,20 @@
 import _ from 'lodash';
 import React from 'react';
 import Header from '../Header';
-import { Button, Divider, Tooltip } from 'antd';
+import { Button, Divider, Image, Space, Tooltip } from 'antd';
+import { useQuery } from '@apollo/client';
+import { GET_ALL_CATEGORIES_QUERY } from '@/lib/graphql/query';
+import { Categories as CategoriesType } from '@/utils/types/product';
+import Footer from '../Footer';
+import { useRouter } from 'next/navigation';
 
 const Categories = () => {
-  const [activeButton, setActiveButton] = React.useState(0);
+  const router = useRouter();
+
+  const { loading, data } = useQuery(GET_ALL_CATEGORIES_QUERY);
+  const categories = _.get<CategoriesType[]>(data, 'getCategories', [] as CategoriesType[]);
+
+  if (loading) return <div>Loading....</div>;
 
   return (
     <main>
@@ -14,30 +24,40 @@ const Categories = () => {
         <Header />
       </header>
       <Divider />
-      <div className='mt-4 mb-4 pr-28 pl-28'>
-        <div className='grid grid-cols-8 gap-3 mb-8'>
-          <Button className='p-5' onClick={() => setActiveButton(0)} type={activeButton === 0 ? 'primary' : 'default'}>
-            All
-          </Button>
-          <Button className='p-5' onClick={() => setActiveButton(1)} type={activeButton === 1 ? 'primary' : 'default'}>
-            Best Seller
-          </Button>
-          <Button className='p-5' onClick={() => setActiveButton(2)} type={activeButton === 2 ? 'primary' : 'default'}>
-            Most Viewer
-          </Button>
-        </div>
-        <h1 className='text-2xl font-bold'>Categories</h1>
-        <div className='grid grid-cols-3 gap-4'>
-          {_.times(9, (index) => (
-            <Tooltip key={index} title={<div>This is</div>}>
-              <div className='bg-white p-4 rounded-md shadow-md'>
-                <h2 className='text-lg font-bold'>Category {index + 1}</h2>
-                <p className='text-sm mt-2'>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+      <div className='mt-4 mb-10 pr-28 pl-28'>
+        <h1 className='text-3xl font-bold mb-8 tracking-wide leading-8 opacity-65'>Categories</h1>
+        <Space
+          direction='vertical'
+          styles={{
+            item: {
+              width: '100%',
+            },
+          }}
+          className='w-full'
+          size={64}
+        >
+          {categories.map((category, index) => (
+            <div
+              className='flex pt-6 pb-6 pl-12 pr-12 shadow-sm hover:shadow-lg cursor-pointer border border-slate-200 rounded-lg w-full transition-all duration-200'
+              key={index}
+              onClick={() => router.push(`/categories/${category.name}`)}
+            >
+              <Image src={category.image} alt={category.name} width={300} height={150} preview={false} />
+              <Divider type='vertical' />
+              <div className='w-2/3'>
+                <h1 className='mb-6 text-3xl tracking-wide font-bold'>{category.name}</h1>
+                <div className='*:leading-8 *:opacity-60 *:font-medium'>
+                  <p>{category.description}</p>
+                  <p>Total Product: {category.products?.length ?? 0}</p>
+                </div>
               </div>
-            </Tooltip>
+            </div>
           ))}
-        </div>
+        </Space>
       </div>
+      <footer className='p-6 bg-gray-200'>
+        <Footer />
+      </footer>
     </main>
   );
 };

@@ -94,20 +94,14 @@ export const CART_PRODUCT_FILED = gql`
 `;
 
 export const CATEGORY_FIELD = gql`
+  ${PRODUCT_FIELD}
   fragment categoryField on Categories {
     id
     name
     description
     image
     products {
-      name
-      id
-      description
-      price
-      images {
-        imageUrl
-      }
-      averageRate
+      ...productField
     }
   }
 `;
