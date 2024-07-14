@@ -24,11 +24,11 @@ const AdminProducts = () => {
     },
     variables: {
       page: 1,
-      limit: 10,
+      limit: 10000,
     },
   });
 
-  const res = _.get(data, 'getAllProduct', []);
+  const res = _.get(data, 'getAllProduct.data', []);
   const products = _.map(res, (product: Product) => {
     return {
       id: product.id,
@@ -68,7 +68,7 @@ const AdminProducts = () => {
       dataIndex: 'images',
       key: 'images',
       render: (image: ProductImage[]) => {
-        return <Image src={image[0].imageUrl} alt={image[0].image} width={50} height={50} />;
+        return <Image src={image[0]?.imageUrl ?? ''} alt={image[0]?.image ?? ''} width={50} height={50} />;
       },
     },
   ];
