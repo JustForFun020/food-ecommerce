@@ -1,7 +1,7 @@
 'use client';
 
 import _ from 'lodash';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import { Avatar, Button, Dropdown, Input } from 'antd';
 import type { MenuProps } from 'antd';
 import logo from '@/assets/diet.png';
@@ -9,8 +9,6 @@ import Image from 'next/image';
 import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import { useAppSelector } from '@/lib/hook/useAppSelector';
-import { RootState } from '@/utils/types/redux';
 
 const Header = () => {
   const router = useRouter();

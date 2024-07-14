@@ -2,22 +2,13 @@
 
 import _ from 'lodash';
 import React from 'react';
-import { fakeProduct } from '../../../__mocks__/product';
 import { Badge, Button, Carousel, Divider, Input, Modal, Rate, Tag, Image } from 'antd';
-import { CommentOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import PageNotFound from '../Error/404';
-import { useMutation, useQuery } from '@apollo/client';
-import {
-  GET_ALL_USER_CART,
-  GET_PRODUCT_BY_CATEGORY_QUERY,
-  GET_PRODUCT_BY_ID_QUERY,
-  GET_PRODUCT_BY_NAME_QUERY,
-} from '@/lib/graphql/query';
+import { useQuery } from '@apollo/client';
+import { GET_PRODUCT_BY_CATEGORY_QUERY, GET_PRODUCT_BY_NAME_QUERY } from '@/lib/graphql/query';
 import { Product as ProductType } from '@/utils/types/product';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/_get-rate-product';
-import { ADD_PRODUCT_TO_CART_MUTATION } from '@/lib/graphql/mutation';
-import { useAuththor } from '@/lib/hook/useAuththor';
 import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 

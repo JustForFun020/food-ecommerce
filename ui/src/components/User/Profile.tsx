@@ -1,17 +1,15 @@
 'use client';
 
-import _, { update } from 'lodash';
+import _ from 'lodash';
 import { GET_USER_BY_USERNAME_QUERY } from '@/lib/graphql/query';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
 import React from 'react';
-import { User, User as UserType } from '@/utils/types/user';
+import { User as UserType } from '@/utils/types/user';
 import { Avatar, Divider, Drawer, Form, Input, message } from 'antd';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import '@/style/order.css';
 import { UPDATE_USER_MUTATION } from '@/lib/graphql/mutation';
-import { revalidatePath } from 'next/cache';
-import notificationError from '@/utils/notificationError';
 
 const Profile = ({ username }: { username: string }) => {
   const [isVisitableEditProfile, setIsVisitableEditProfile] = React.useState(false);
