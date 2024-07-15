@@ -86,10 +86,14 @@ export class CartService {
   }
 
   async getAllUserCart(uid: number) {
-    return await this.cartRepository.find({
+    const cart = await this.cartRepository.find({
       where: { user: { id: uid } },
       relations: ['cartProducts.product', 'cartProducts.product.images'],
     });
+    if (cart.length === 1 && cart[0].cartProducts.length === 0) {
+      return [];
+    }
+    return cart;
   }
 
   async getCartById(cid: number) {

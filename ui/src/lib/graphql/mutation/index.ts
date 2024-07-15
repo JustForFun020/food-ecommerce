@@ -25,8 +25,10 @@ import { addProductToCart } from './_add-to-cart';
 import { deleteCart } from './_delete-cart';
 import { updateBasicInformationCart } from './_update-info-cart';
 import { updateCartProductQuantity } from './_update-cart-quantity';
+import { deleteProductFromCart } from './_delete-product-from-cart';
 
 export const ADD_PRODUCT_TO_CART_MUTATION = addProductToCart;
 export const DELETE_CART_MUTATION = deleteCart;
 export const UPDATE_BASIC_INFORMATION_CART_MUTATION = updateBasicInformationCart;
 export const UPDATE_CART_PRODUCT_QUANTITY_MUTATION = updateCartProductQuantity;
+export const DELETE_PRODUCT_FROM_CART_MUTATION = deleteProductFromCart;
