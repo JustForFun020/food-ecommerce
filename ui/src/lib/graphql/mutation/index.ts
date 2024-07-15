@@ -32,3 +32,12 @@ export const DELETE_CART_MUTATION = deleteCart;
 export const UPDATE_BASIC_INFORMATION_CART_MUTATION = updateBasicInformationCart;
 export const UPDATE_CART_PRODUCT_QUANTITY_MUTATION = updateCartProductQuantity;
 export const DELETE_PRODUCT_FROM_CART_MUTATION = deleteProductFromCart;
+
+// Category mutation exports
+import { deleteCategory } from './_delete-category';
+import { deleteCategoryProduct } from './_delete-category-product';
+import { updateCategory } from './_update-category';
+
+export const DELETE_CATEGORY_PRODUCT_MUTATION = deleteCategoryProduct;
+export const DELETE_CATEGORY_MUTATION = deleteCategory;
+export const UPDATE_CATEGORY_MUTATION = updateCategory;

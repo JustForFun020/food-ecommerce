@@ -1,6 +1,6 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { CreateCategoriesDto } from 'src/categories/dto/create-categories.dto';
+import { CreateCategoriesDto } from 'src/categories/dto/create-category.dto';
 import { UploadImageDto } from './upload-image.dto';
 
 @InputType()
