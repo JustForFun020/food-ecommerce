@@ -26,4 +26,11 @@ export class UserResolver {
   async updateUser(@Args('updateUserDto') updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(updateUserDto);
   }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Query(() => [User])
+  async getAllUser() {
+    return this.userService.getAllUser();
+  }
 }

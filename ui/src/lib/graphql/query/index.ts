@@ -20,8 +20,10 @@ export const GET_CATEGORY_BY_NAME_QUERY = getCategoryByName;
 import getUserByUsername from './_get-user-by-username';
 
 export const GET_USER_BY_USERNAME_QUERY = getUserByUsername;
+export const GET_ALL_USERS_QUERY = getAllUsers;
 
 // Cart query
 import { getAllUserCarts } from './_get-all-cart';
+import { getAllUsers } from './_get-all-users';
 
 export const GET_ALL_USER_CART = getAllUserCarts;

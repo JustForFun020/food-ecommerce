@@ -1,13 +1,16 @@
+import { Cart } from './cart';
+import { Rate } from './rate';
+
 export type User = {
   id: string;
   username: string;
   address: string;
   phone: string;
   email: string;
-  carts: {
-    name: string;
-    cartProducts: {
-      quantity: number;
-    }[];
+  carts: Cart[];
+  rates: Rate[];
+  roles: {
+    name: 'USER' | 'ADMIN';
+    id: number;
   }[];
 };

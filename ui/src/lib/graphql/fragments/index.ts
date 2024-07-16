@@ -3,14 +3,17 @@ import { gql } from '@apollo/client';
 export const USER_FIELD = gql`
   fragment userField on User {
     id
-    username
     address
     phone
     email
+    avatar
     carts {
-      cartProducts {
-        quantity
+      invoice {
+        price
       }
+    }
+    rates {
+      comment
     }
   }
 `;
