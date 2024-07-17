@@ -1,4 +1,4 @@
-import { Inject, UseGuards } from '@nestjs/common';
+import { Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CartService } from './cart.service';
 import { UserRolesGuard } from 'src/user/guard/user-roles.guard';
@@ -8,6 +8,9 @@ import { CreateCartProductsDto } from './dto/create-cart-products.dto';
 import { Cart } from './entity/cart.entity';
 import { UpdateBasicInformationCartDto } from './dto/update-info-cart.dto';
 import { UpdateCartProductQuantityDto } from './dto/update-cart-product-quantity.dto';
+import { Invoice } from './entity/invoice.entity';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { CreateInvoiceExceptionFilter } from './filter/create-invoice.filter';
 
 @Resolver()
 export class CartResolver {
@@ -73,5 +76,15 @@ export class CartResolver {
     @Args('cid') cid: number,
   ) {
     return await this.cartService.deleteProductFromCart(pid, cid);
+  }
+
+  @UseFilters(CreateInvoiceExceptionFilter)
+  @UseGuards(UserRolesGuard)
+  @Roles(['USER'])
+  @Mutation(() => Invoice)
+  async createInvoice(
+    @Args('createInvoiceDto') createInvoiceDto: CreateInvoiceDto,
+  ) {
+    return await this.cartService.createInvoice(createInvoiceDto);
   }
 }

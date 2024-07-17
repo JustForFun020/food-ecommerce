@@ -1,7 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { AbstractEntity } from 'src/database/abstract.entity';
-import { Product } from 'src/product/entity/product.entity';
-import { Column, Entity, JoinColumn, ManyToMany, OneToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 import { Cart } from './cart.entity';
 
 @Entity()
@@ -15,12 +14,15 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Field()
   price: number;
 
-  @ManyToMany(() => Product, { cascade: true })
-  @Field(() => [Product])
-  products: Product[];
+  @Column({ default: 'Pending' })
+  @Field({ defaultValue: 'Pending' })
+  status: string;
 
-  @OneToOne(() => Cart, (cart) => cart.invoice)
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Field({ defaultValue: new Date() })
+  createdAt: Date;
+
+  @ManyToOne(() => Cart, (cart) => cart.invoice)
   @Field(() => Cart)
-  @JoinColumn()
   cart: Cart;
 }
