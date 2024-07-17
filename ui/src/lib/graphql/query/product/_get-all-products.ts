@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { PRODUCT_FIELD } from '../fragments';
+import { PRODUCT_FIELD } from '../../fragments';
 
 export const getAllProducts = gql`
   ${PRODUCT_FIELD}
