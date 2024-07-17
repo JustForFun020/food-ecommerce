@@ -64,4 +64,14 @@ export class CartResolver {
       updateCartProductQuantityDto,
     );
   }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['USER'])
+  @Mutation(() => String)
+  async deleteProductFromCart(
+    @Args('pid') pid: number,
+    @Args('cid') cid: number,
+  ) {
+    return await this.cartService.deleteProductFromCart(pid, cid);
+  }
 }

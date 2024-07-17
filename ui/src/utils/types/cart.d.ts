@@ -21,4 +21,5 @@ export type Invoice = {
   id: number;
   product: Product[];
   cart: Cart;
+  price: number;
 };

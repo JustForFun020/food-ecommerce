@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { CART_PRODUCT_FILED } from '../fragments';
+import { CART_PRODUCT_FILED } from '../../fragments';
 
 export const addProductToCart = gql`
   ${CART_PRODUCT_FILED}

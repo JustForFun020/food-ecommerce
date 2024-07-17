@@ -5,19 +5,19 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Header from '../Header';
 import '@/style/order.css';
 import Link from 'next/link';
-import { Button, Layout, Tag } from 'antd';
+import { Button, Layout, message, Tag } from 'antd';
 import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import { DELETE_CART_MUTATION } from '@/lib/graphql/mutation';
+import { DELETE_CART_MUTATION, DELETE_PRODUCT_FROM_CART_MUTATION } from '@/lib/graphql/mutation';
 import { Cart } from '@/utils/types/cart';
 import EditCart from './EditCart';
 import Checkout from './Checkout';
 
 const Order = () => {
-  const [isVisitableEditCart, setIsVisitableEditCart] = React.useState(false);
-  const [isVisitableCheckout, setIsVisitableCheckout] = React.useState(false);
+  const [isVisitableEditCart, setIsVisitableEditCart] = useState(false);
+  const [isVisitableCheckout, setIsVisitableCheckout] = useState(false);
   const [selectedCart, setSelectedCart] = useState<Cart>({} as Cart);
 
   const { currentUser, error: unAuthorError } = useAuththor();
@@ -30,6 +30,18 @@ const Order = () => {
   const [deleteCart, { loading: deleteCartLoading }] = useMutation(DELETE_CART_MUTATION, {
     refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: Number(currentUser?.id) } }],
   });
+  const [deleteProductFromCart, { loading: deleteProductLoading, data }] = useMutation(
+    DELETE_PRODUCT_FROM_CART_MUTATION,
+    {
+      refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: Number(currentUser?.id) } }],
+      onCompleted: () => {
+        message.success('Product deleted successfully');
+      },
+      onError: (error) => {
+        message.error(error.message);
+      },
+    },
+  );
 
   const carts = _.get<Cart[]>(getAllUserCarts, 'getAllUserCarts', []);
 
@@ -41,6 +53,15 @@ const Order = () => {
   const handleDeleteCart = (cid: number) => {
     deleteCart({
       variables: {
+        cid: Number(cid),
+      },
+    });
+  };
+
+  const handleDeleteProduct = (pid: number, cid: number) => {
+    deleteProductFromCart({
+      variables: {
+        pid: Number(pid),
         cid: Number(cid),
       },
     });
@@ -149,7 +170,11 @@ const Order = () => {
                                 <div className=' text-lg'>$ {product.price}</div>
                                 <div className=' text-lg'>{p.quantity}</div>
                                 <div>
-                                  <Button icon={<DeleteOutlined />} danger />
+                                  <Button
+                                    icon={<DeleteOutlined />}
+                                    danger
+                                    onClick={() => handleDeleteProduct(product.id, cart.id)}
+                                  />
                                 </div>
                               </div>
                             </div>

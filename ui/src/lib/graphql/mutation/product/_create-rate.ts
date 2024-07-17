@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { RATE_FIELD } from '../fragments';
+import { RATE_FIELD } from '../../fragments';
 
 export const createRate = gql`
   ${RATE_FIELD}

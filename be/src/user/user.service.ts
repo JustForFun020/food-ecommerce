@@ -48,4 +48,22 @@ export class UserService {
     const { password, ...res } = newUser;
     return res;
   }
+
+  async getAllUser() {
+    const users = await this.userRepository.find({
+      where: {
+        roles: {
+          name: 'USER',
+        },
+      },
+      relations: [
+        'carts',
+        'carts.cartProducts',
+        'rates',
+        'carts.invoice',
+        'roles',
+      ],
+    });
+    return users;
+  }
 }

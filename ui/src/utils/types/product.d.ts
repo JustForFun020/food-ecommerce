@@ -11,6 +11,7 @@ export type Product = {
 };
 
 export type Categories = {
+  id: number;
   name: NameOfCategories;
   image: string;
   description: string;
