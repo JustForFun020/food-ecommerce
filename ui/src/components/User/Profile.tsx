@@ -1,9 +1,9 @@
 'use client';
 
 import _ from 'lodash';
+import React, { useState } from 'react';
 import { GET_USER_BY_USERNAME_QUERY } from '@/lib/graphql/query';
 import { useMutation, useSuspenseQuery } from '@apollo/client';
-import React from 'react';
 import { User as UserType } from '@/utils/types/user';
 import { Avatar, Divider, Drawer, Form, Input, message } from 'antd';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
@@ -12,8 +12,7 @@ import '@/style/order.css';
 import { UPDATE_USER_MUTATION } from '@/lib/graphql/mutation';
 
 const Profile = ({ username }: { username: string }) => {
-  const [isVisitableEditProfile, setIsVisitableEditProfile] = React.useState(false);
-  const [messageUpdateError, setMessageUpdateError] = React.useState('Something went wrong!');
+  const [isVisitableEditProfile, setIsVisitableEditProfile] = useState(false);
 
   const { data } = useSuspenseQuery(GET_USER_BY_USERNAME_QUERY, {
     variables: { username },

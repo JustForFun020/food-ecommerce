@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { CATEGORY_FIELD } from '../fragments';
+import { CATEGORY_FIELD } from '../../fragments';
 
 export const getCategoryByName = gql`
   ${CATEGORY_FIELD}

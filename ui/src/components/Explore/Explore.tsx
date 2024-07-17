@@ -1,7 +1,7 @@
 'use client';
 
 import _ from 'lodash';
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import { fakeProduct } from '../../../__mocks__/product';
@@ -14,10 +14,10 @@ import { NameOfCategories } from '@/utils/enum/categories';
 import ProductTooltip from './ProductTooltip';
 
 const Explore = () => {
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [listProducts, setListProducts] = React.useState<Product[]>([]);
-  const [isFiltering, setIsFiltering] = React.useState(false);
-  const [categorySelected, setCategorySelected] = React.useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [listProducts, setListProducts] = useState<Product[]>([]);
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [categorySelected, setCategorySelected] = useState<string>('');
 
   const router = useRouter();
 

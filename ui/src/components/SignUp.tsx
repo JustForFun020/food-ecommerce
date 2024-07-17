@@ -1,13 +1,13 @@
 'use client';
 
-import React from 'react';
-import { Button, Form, Input } from 'antd';
+import React, { useState } from 'react';
+import { Button, Form, Input, message } from 'antd';
 import '@/style/auth.css';
 import Link from 'next/link';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_MUTATION } from '@/lib/graphql/mutation';
-import notificationError from '@/utils/notificationError';
 import { useRouter } from 'next/navigation';
+import _ from 'lodash';
 
 interface SignUpProps {
   username: string;
@@ -16,17 +16,26 @@ interface SignUpProps {
 }
 
 const SignUp = () => {
-  const [signUpDto, setSignUpDto] = React.useState<SignUpProps>({} as SignUpProps);
+  const [signUpDto, setSignUpDto] = useState<SignUpProps>({} as SignUpProps);
 
   const [form] = Form.useForm();
   const router = useRouter();
 
-  const [signup, { loading: signUpLoading, error: signUpError }] = useMutation(SIGNUP_MUTATION);
+  const [signup, { loading: signUpLoading, error: signUpError }] = useMutation(SIGNUP_MUTATION, {
+    onError: (error) => {
+      message.error(error.message);
+    },
+    onCompleted: (data) => {
+      const res = _.get(data, 'signup', {});
+      localStorage.setItem('token', res.data.signup.token);
+      router.push('/');
+      form.resetFields();
+    },
+  });
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSignUpDto({ ...signUpDto, [e.target.name]: e.target.value });
   };
-  const { noti, contextHolder } = notificationError('Sign up failed!', `${signUpError?.message}. Please try again!`);
 
   const onFinish = async (values: any) => {
     const { confirmPassword, ...value } = values;
@@ -35,15 +44,7 @@ const SignUp = () => {
         variables: {
           signUpDto: value,
         },
-      })
-        .then((res) => {
-          localStorage.setItem('token', res.data.signup.token);
-          router.push('/');
-          form.resetFields();
-        })
-        .catch((error) => {
-          noti();
-        });
+      });
     } catch (error) {
       console.error(error);
     }
@@ -51,7 +52,6 @@ const SignUp = () => {
 
   return (
     <main className='signup__container h-screen w-full flex text-white items-center justify-center flex-col'>
-      {contextHolder}
       <h1 className=' underline underline-offset-[20px] z-50 login__title mb-14 text-6xl font-bold'>Sign Up</h1>
       <Form
         form={form}

@@ -16,8 +16,8 @@ import EditCart from './EditCart';
 import Checkout from './Checkout';
 
 const Order = () => {
-  const [isVisitableEditCart, setIsVisitableEditCart] = React.useState(false);
-  const [isVisitableCheckout, setIsVisitableCheckout] = React.useState(false);
+  const [isVisitableEditCart, setIsVisitableEditCart] = useState(false);
+  const [isVisitableCheckout, setIsVisitableCheckout] = useState(false);
   const [selectedCart, setSelectedCart] = useState<Cart>({} as Cart);
 
   const { currentUser, error: unAuthorError } = useAuththor();

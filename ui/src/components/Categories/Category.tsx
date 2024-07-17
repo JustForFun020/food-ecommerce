@@ -1,7 +1,7 @@
 'use client';
 
 import _ from 'lodash';
-import React, { Fragment } from 'react';
+import React, { useState } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import { Button, Card, Divider, Modal, Select, Tag, Image, Space, message } from 'antd';
@@ -13,9 +13,9 @@ import { Categories, Product } from '@/utils/types/product';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 
 const Category = ({ category: name }: { category: string }) => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [product, setProduct] = React.useState<Product>();
-  const [currentCategories, setCurrentCategories] = React.useState<Categories>({} as Categories);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [product, setProduct] = useState<Product>();
+  const [currentCategories, setCurrentCategories] = useState<Categories>({} as Categories);
 
   const { data, loading, error } = useQuery(GET_CATEGORY_BY_NAME_QUERY, {
     variables: { name },

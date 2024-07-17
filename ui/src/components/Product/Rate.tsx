@@ -1,15 +1,15 @@
 'use client';
 
 import _ from 'lodash';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/_get-rate-product';
+import React, { useState } from 'react';
 import { CommentOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Modal, Rate as AntdRate, Input, message, Avatar, Tooltip } from 'antd';
-import React from 'react';
 import { Rate as RateType } from '@/utils/types/rate';
 import { CREATE_RATE_MUTATION } from '@/lib/graphql/mutation';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import moment from 'moment';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
 
 interface CommentProps {
   rating: number;
@@ -17,8 +17,8 @@ interface CommentProps {
 }
 
 const Rate = ({ name }: { name: string }) => {
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [commentValue, setCommentValue] = React.useState<CommentProps>({ rating: 0, comment: '' } as CommentProps);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [commentValue, setCommentValue] = useState<CommentProps>({ rating: 0, comment: '' } as CommentProps);
   const { currentUser } = useAuththor();
 
   const { loading, data: ratesData } = useQuery(GET_RATE_PRODUCT, {
