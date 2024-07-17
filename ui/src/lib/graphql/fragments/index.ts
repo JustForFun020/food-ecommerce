@@ -108,3 +108,21 @@ export const CATEGORY_FIELD = gql`
     }
   }
 `;
+
+export const INVOICE_FIELD = gql`
+  fragment invoiceField on Invoice {
+    id
+    name
+    price
+    status
+    cart {
+      name
+      cartProducts {
+        quantity
+        product {
+          name
+        }
+      }
+    }
+  }
+`;

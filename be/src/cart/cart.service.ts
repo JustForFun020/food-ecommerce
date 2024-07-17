@@ -10,6 +10,7 @@ import { CreateCartDto } from './dto/create-cart.dto';
 import { CreateCartProductsDto } from './dto/create-cart-products.dto';
 import { UpdateBasicInformationCartDto } from './dto/update-info-cart.dto';
 import { UpdateCartProductQuantityDto } from './dto/update-cart-product-quantity.dto';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 @Injectable()
 export class CartService {
@@ -157,5 +158,22 @@ export class CartService {
     cart.description = description;
     cart.topic = topic;
     return await this.cartRepository.save(cart);
+  }
+
+  async createInvoice(createInvoiceDto: CreateInvoiceDto) {
+    const { cartId } = createInvoiceDto;
+    const cart = await this.cartRepository.findOne({
+      where: { id: cartId },
+      relations: ['cartProducts', 'cartProducts.product'],
+    });
+    if (!cart) {
+      return new HttpException('Cart not found', HttpStatus.BAD_REQUEST);
+    }
+    const newInvoice = new Invoice({
+      ...createInvoiceDto,
+      cart,
+    });
+    await this.invoiceRepository.save(newInvoice);
+    return newInvoice;
   }
 }

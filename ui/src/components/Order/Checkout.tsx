@@ -1,7 +1,9 @@
 import _ from 'lodash';
-import { Modal, Button } from 'antd';
+import { Modal, Button, message } from 'antd';
 import React from 'react';
-import { Cart } from '@/utils/types/cart';
+import { Cart, CartProducts } from '@/utils/types/cart';
+import { useMutation } from '@apollo/client';
+import { CREATE_INVOICE_MUTATION } from '@/lib/graphql/mutation';
 
 interface CheckoutProps {
   selectedCart: Cart;
@@ -11,12 +13,36 @@ interface CheckoutProps {
 
 const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }: CheckoutProps) => {
   const { cartProducts: products } = selectedCart;
+
+  const [createInvoice, { loading: createInvoiceLoading }] = useMutation(CREATE_INVOICE_MUTATION, {
+    onCompleted: () => {
+      message.success('Checkout successfully. Please wait your order is being processed.');
+      setIsVisitableCheckout(false);
+    },
+    onError: (error) => {
+      message.error(error.message);
+    },
+  });
+
+  const handleCheckout = () => {
+    const totalPrice = _.sumBy(products, (p: CartProducts) => p.quantity * p.product.price);
+    createInvoice({
+      variables: {
+        createInvoiceDto: {
+          cartId: Number(selectedCart.id),
+          price: totalPrice,
+          name: `Invoice ${selectedCart.name}`,
+        },
+      },
+    });
+  };
+
   return (
     <Modal
       title={<div>Cart {selectedCart.name} checkout</div>}
       closable={false}
       footer={[
-        <Button key={'confirm-checkout'} type='primary'>
+        <Button key={'confirm-checkout'} type='primary' onClick={() => handleCheckout()} loading={createInvoiceLoading}>
           Confirm
         </Button>,
         <Button key={'cancel-checkout'} onClick={() => setIsVisitableCheckout(false)}>
