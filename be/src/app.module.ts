@@ -13,6 +13,7 @@ import { CartModule } from './cart/cart.module';
 import { RateModule } from './rate/rate.module';
 import { StaticModule } from './serve-static/serve-static.module';
 import { UserModule } from './user/user.module';
+import { InvoiceModule } from './invoice/invoice.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UserModule } from './user/user.module';
     CartModule,
     RateModule,
     UserModule,
+    InvoiceModule,
   ],
   providers: [
     {

@@ -6,7 +6,7 @@ import { Button, Drawer, Image, message, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useRouter } from 'next/navigation';
 import AdminCategories from './Categories';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 import { Categories, Product, ProductImage } from '@/utils/types/product';
 import { revalidatePath } from 'next/cache';
@@ -24,11 +24,19 @@ const AdminProducts = () => {
     },
     variables: {
       page: 1,
-      limit: 10,
+      limit: 10000,
     },
+    fetchPolicy: 'cache-and-network',
+  });
+  const [getAllProduct] = useLazyQuery(GET_ALL_PRODUCTS_QUERY, {
+    variables: {
+      page: 1,
+      limit: 10000,
+    },
+    fetchPolicy: 'cache-and-network',
   });
 
-  const res = _.get(data, 'getAllProduct', []);
+  const res = _.get(data, 'getAllProduct.data', []);
   const products = _.map(res, (product: Product) => {
     return {
       id: product.id,
@@ -38,6 +46,7 @@ const AdminProducts = () => {
       images: product.images,
     };
   });
+  console.log(products);
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -60,7 +69,7 @@ const AdminProducts = () => {
       dataIndex: 'category',
       key: 'category',
       render: (category) => {
-        return <div>{category.name}</div>;
+        return <div>{category?.name}</div>;
       },
     },
     {
@@ -68,7 +77,7 @@ const AdminProducts = () => {
       dataIndex: 'images',
       key: 'images',
       render: (image: ProductImage[]) => {
-        return <Image src={image[0].imageUrl} alt={image[0].image} width={50} height={50} />;
+        return image && <Image src={image[0]?.imageUrl} alt={image[0]?.image} width={50} height={50} />;
       },
     },
   ];
@@ -76,7 +85,7 @@ const AdminProducts = () => {
   const openProductDrawer = (product: Product) => {
     return (
       <Drawer
-        title={`Product: ${product.name}`}
+        title={`Product: ${product?.name}`}
         zIndex={123142342}
         placement='right'
         closable={true}
@@ -95,24 +104,24 @@ const AdminProducts = () => {
         <div className='flex'>
           <Image
             className='w-1/3'
-            src={product.images[0].imageUrl}
-            alt={product.images[0].image}
+            src={product?.images[0].imageUrl}
+            alt={product?.images[0].image}
             width={300}
             height={300}
           />
           <div className='ml-8 w-2/3'>
             <h1 className='text-2xl font-medium opacity-80 mb-2'>Common Information</h1>
             <ul className='*:leading-7'>
-              <li>ID: {product.id}</li>
-              <li>Name: {product.name}</li>
-              <li>Price: ${product.price}</li>
-              <li>Category: {product.categories.name}</li>
+              <li>ID: {product?.id}</li>
+              <li>Name: {product?.name}</li>
+              <li>Price: ${product?.price}</li>
+              <li>Category: {product?.categories.name}</li>
             </ul>
           </div>
         </div>
         <div className='mt-12'>
           <h1 className='text-2xl font-medium opacity-80 mb-2'>Description</h1>
-          <p>{product.description}</p>
+          <p>{product?.description}</p>
         </div>
       </Drawer>
     );
@@ -143,8 +152,15 @@ const AdminProducts = () => {
         </div>
         <Table
           className='h-full'
-          footer={() => <div className='text-center opacity-80 font-medium'>Coppyright by JusForFun</div>}
-          title={() => <div className='text-center text-4xl opacity-80 tracking-wider font-bold'>List Product</div>}
+          footer={() => <div className='text-center opacity-80 font-medium'>Coppyright by @JusForFun</div>}
+          title={() => (
+            <div className='relative'>
+              <div className='text-center text-4xl opacity-80 tracking-wider font-bold'>List Product</div>
+              <Button className='absolute top-2 right-3' type='primary' onClick={() => getAllProduct()}>
+                Refresh
+              </Button>
+            </div>
+          )}
           columns={columns}
           dataSource={products}
           loading={loading}
@@ -158,7 +174,7 @@ const AdminProducts = () => {
           }}
         />
       </div>
-      {isVisitableDrawer && selectedProduct && openProductDrawer(selectedProduct)}
+      {openProductDrawer(selectedProduct as Product)}
     </div>
   );
 };

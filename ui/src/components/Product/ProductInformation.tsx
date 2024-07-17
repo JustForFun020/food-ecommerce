@@ -8,9 +8,9 @@ import PageNotFound from '../Error/404';
 import { useQuery } from '@apollo/client';
 import { GET_PRODUCT_BY_CATEGORY_QUERY, GET_PRODUCT_BY_NAME_QUERY } from '@/lib/graphql/query';
 import { Product as ProductType } from '@/utils/types/product';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/_get-rate-product';
 import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
 
 const ProductInformation = ({ name }: { name: string }) => {
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {

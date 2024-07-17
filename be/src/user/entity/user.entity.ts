@@ -2,6 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Role } from 'src/auth/entity/role.entity';
 import { Cart } from 'src/cart/entity/cart.entity';
 import { AbstractEntity } from 'src/database/abstract.entity';
+import { Invoice } from 'src/invoice/entity/invoice.entity';
 import { Rate } from 'src/rate/entity/rate.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
@@ -44,4 +45,8 @@ export class User extends AbstractEntity<User> {
   @Field(() => [Role])
   @JoinTable({ name: 'user_roles' })
   roles: Role[];
+
+  @OneToMany(() => Invoice, (invoice) => invoice.user, { cascade: true })
+  @Field(() => [Invoice], { nullable: true })
+  invoices: Invoice[];
 }

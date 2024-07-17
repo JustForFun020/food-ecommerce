@@ -1,7 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { AbstractEntity } from 'src/database/abstract.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
-import { Invoice } from './invoice.entity';
 import { User } from 'src/user/entity/user.entity';
 import { CartProducts } from './cart-products.entity';
 
@@ -19,10 +18,6 @@ export class Cart extends AbstractEntity<Cart> {
   @Column({ nullable: true })
   @Field({ nullable: true })
   topic: string;
-
-  @OneToMany(() => Invoice, (invoice) => invoice.cart)
-  @Field(() => [Invoice], { nullable: true })
-  invoice: Invoice[];
 
   @ManyToOne(() => User, (user) => user.carts)
   @Field(() => User)

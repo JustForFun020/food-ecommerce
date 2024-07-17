@@ -7,10 +7,11 @@ export const USER_FIELD = gql`
     phone
     email
     avatar
+    invoices {
+      name
+    }
     carts {
-      invoice {
-        price
-      }
+      name
     }
     rates {
       comment
@@ -50,7 +51,7 @@ export const RATE_FIELD = gql`
     comment
     createdAt
     user {
-      ...userField
+      username
     }
   }
 `;
@@ -97,14 +98,19 @@ export const CART_PRODUCT_FILED = gql`
 `;
 
 export const CATEGORY_FIELD = gql`
-  ${PRODUCT_FIELD}
   fragment categoryField on Categories {
     id
     name
     description
     image
     products {
-      ...productField
+      name
+      price
+      description
+      images {
+        imageUrl
+      }
+      averageRate
     }
   }
 `;
@@ -115,14 +121,9 @@ export const INVOICE_FIELD = gql`
     name
     price
     status
-    cart {
-      name
-      cartProducts {
-        quantity
-        product {
-          name
-        }
-      }
+    createdAt
+    user {
+      id
     }
   }
 `;

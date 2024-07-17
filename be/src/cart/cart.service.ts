@@ -3,14 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Cart } from './entity/cart.entity';
 import { Product } from 'src/product/entity/product.entity';
 import { User } from 'src/user/entity/user.entity';
-import { Invoice } from './entity/invoice.entity';
 import { Repository } from 'typeorm';
 import { CartProducts } from './entity/cart-products.entity';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CreateCartProductsDto } from './dto/create-cart-products.dto';
 import { UpdateBasicInformationCartDto } from './dto/update-info-cart.dto';
 import { UpdateCartProductQuantityDto } from './dto/update-cart-product-quantity.dto';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 @Injectable()
 export class CartService {
@@ -21,8 +19,6 @@ export class CartService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(Invoice)
-    private readonly invoiceRepository: Repository<Invoice>,
     @InjectRepository(CartProducts)
     private readonly cartProductsRepository: Repository<CartProducts>,
   ) {}
@@ -158,22 +154,5 @@ export class CartService {
     cart.description = description;
     cart.topic = topic;
     return await this.cartRepository.save(cart);
-  }
-
-  async createInvoice(createInvoiceDto: CreateInvoiceDto) {
-    const { cartId } = createInvoiceDto;
-    const cart = await this.cartRepository.findOne({
-      where: { id: cartId },
-      relations: ['cartProducts', 'cartProducts.product'],
-    });
-    if (!cart) {
-      return new HttpException('Cart not found', HttpStatus.BAD_REQUEST);
-    }
-    const newInvoice = new Invoice({
-      ...createInvoiceDto,
-      cart,
-    });
-    await this.invoiceRepository.save(newInvoice);
-    return newInvoice;
   }
 }

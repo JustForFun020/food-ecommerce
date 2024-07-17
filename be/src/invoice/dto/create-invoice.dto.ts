@@ -3,7 +3,7 @@ import { Field, InputType } from '@nestjs/graphql';
 @InputType()
 export class CreateInvoiceDto {
   @Field()
-  cartId: number;
+  userId: number;
 
   @Field()
   name: string;
