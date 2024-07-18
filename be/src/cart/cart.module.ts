@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cart } from './entity/cart.entity';
-import { Invoice } from './entity/invoice.entity';
+import { Invoice } from '../invoice/entity/invoice.entity';
 import { Product } from 'src/product/entity/product.entity';
 import { User } from 'src/user/entity/user.entity';
 import { CartResolver } from './cart.resolver';

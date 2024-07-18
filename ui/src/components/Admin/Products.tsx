@@ -77,11 +77,7 @@ const AdminProducts = () => {
       dataIndex: 'images',
       key: 'images',
       render: (image: ProductImage[]) => {
-<<<<<<< HEAD
         return <Image src={image[0]?.imageUrl ?? ''} alt={image[0]?.image ?? ''} width={50} height={50} />;
-=======
-        return image && <Image src={image[0]?.imageUrl} alt={image[0]?.image} width={50} height={50} />;
->>>>>>> dev
       },
     },
   ];
