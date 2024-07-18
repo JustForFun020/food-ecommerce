@@ -26,4 +26,10 @@ export class InvoiceService {
     await this.invoiceRepository.save(invoice);
     return invoice;
   }
+
+  async getAllInvoice() {
+    return await this.invoiceRepository.find({
+      relations: ['user'],
+    });
+  }
 }

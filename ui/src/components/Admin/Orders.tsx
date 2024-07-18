@@ -1,7 +1,102 @@
-import React from 'react';
+'use client';
+
+import React, { useCallback } from 'react';
+import { GET_ALL_INVOICE_QUERY } from '@/lib/graphql/query';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { Button, Table, Tag, type TableProps } from 'antd';
+import moment from 'moment';
+import _ from 'lodash';
+import { useRefreshTable } from '@/lib/hook/useRefreshTable';
 
 const AdminOrders = () => {
-  return <div>AdminOrders</div>;
+  const { loading, data } = useQuery(GET_ALL_INVOICE_QUERY);
+  const { refreshData, loading: refreshLoading } = useRefreshTable(GET_ALL_INVOICE_QUERY);
+
+  const handleRefreshData = useCallback(() => {
+    refreshData();
+  }, [refreshData]);
+
+  const listInvoice = _.get(data, 'getAllInvoice', []);
+  const dataSource = _.map(listInvoice, (invoice) => ({
+    id: invoice.id,
+    name: invoice.name,
+    price: invoice.price,
+    status: invoice.status,
+    createdAt: invoice.createdAt,
+    userId: _.get(invoice, 'user.id', ''),
+  }));
+
+  const columns: TableProps<any>['columns'] = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      key: 'id',
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status: string) => {
+        const color = status === 'Pending' ? 'orange' : 'green';
+        return <Tag color={color}>{status}</Tag>;
+      },
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (date: string) => {
+        return <span>{moment(date).format('HH:mm DD/MM/YYYY')}</span>;
+      },
+    },
+    {
+      title: 'User ID',
+      dataIndex: 'userId',
+      key: 'userId',
+    },
+  ];
+
+  if (loading) return <div>Loading...</div>;
+  return (
+    <main className='p-10'>
+      <div className='mb-10'>
+        <p>
+          Revenue:{' '}
+          {_.reduce(
+            listInvoice,
+            (acc, curr) => {
+              return acc + curr.price;
+            },
+            0,
+          )}
+        </p>
+        <p></p>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        loading={loading || refreshLoading}
+        title={() => (
+          <div className='relative'>
+            <div className='text-center text-2xl font-medium'>List Invoices</div>
+            <Button className='absolute right-2 top-[10px]' type='primary' onClick={handleRefreshData}>
+              Refresh
+            </Button>
+          </div>
+        )}
+      />
+    </main>
+  );
 };
 
 export default AdminOrders;

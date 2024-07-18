@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Inject, UseGuards, UseInterceptors } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { UserRolesGuard } from 'src/user/guard/user-roles.guard';
@@ -22,5 +22,12 @@ export class InvoiceResolver {
     @Args('createInvoiceDto') createInvoiceDto: CreateInvoiceDto,
   ) {
     return await this.invoiceService.createInvoice(createInvoiceDto);
+  }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Query(() => [Invoice])
+  async getAllInvoice() {
+    return await this.invoiceService.getAllInvoice();
   }
 }
