@@ -19,7 +19,10 @@ export type CartProducts = {
 
 export type Invoice = {
   id: number;
-  product: Product[];
-  cart: Cart;
+  products: Product[];
   price: number;
+  status: string;
+  createdAt: string;
+  user: User;
+  name: string;
 };

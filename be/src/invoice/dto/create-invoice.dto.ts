@@ -10,4 +10,7 @@ export class CreateInvoiceDto {
 
   @Field()
   price: number;
+
+  @Field(() => [Number])
+  pid: number[];
 }

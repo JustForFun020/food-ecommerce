@@ -30,4 +30,18 @@ export class InvoiceResolver {
   async getAllInvoice() {
     return await this.invoiceService.getAllInvoice();
   }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Mutation(() => Invoice)
+  async toggleStatusInvoice(@Args('id') id: number) {
+    return await this.invoiceService.toggleStatusInvoice(id);
+  }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Mutation(() => String)
+  async deleteInvoice(@Args('id') id: number) {
+    return await this.invoiceService.deleteInvoice(id);
+  }
 }

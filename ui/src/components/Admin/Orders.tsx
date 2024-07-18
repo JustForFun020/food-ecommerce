@@ -1,14 +1,19 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { GET_ALL_INVOICE_QUERY } from '@/lib/graphql/query';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { Button, Table, Tag, type TableProps } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
+import UpdateInvoice from './Invoice/UpdateInvoice';
+import { Invoice } from '@/utils/types/cart';
 
 const AdminOrders = () => {
+  const [isVisitableDrawerUpdate, setIsVisitableDrawerUpdate] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice>({} as Invoice);
+
   const { loading, data } = useQuery(GET_ALL_INVOICE_QUERY);
   const { refreshData, loading: refreshLoading } = useRefreshTable(GET_ALL_INVOICE_QUERY);
 
@@ -84,6 +89,17 @@ const AdminOrders = () => {
       </div>
       <Table
         columns={columns}
+        onRow={(record) => {
+          return {
+            onClick: () => {
+              setSelectedInvoice({
+                ...record,
+                products: _.get(_.find(listInvoice, { id: record.id }), 'products', []),
+              });
+              setIsVisitableDrawerUpdate(true);
+            },
+          };
+        }}
         dataSource={dataSource}
         loading={loading || refreshLoading}
         title={() => (
@@ -94,6 +110,11 @@ const AdminOrders = () => {
             </Button>
           </div>
         )}
+      />
+      <UpdateInvoice
+        selectedInvoice={selectedInvoice}
+        setIsVisitableDrawerUpdate={setIsVisitableDrawerUpdate}
+        isVisitableDrawerUpdate={isVisitableDrawerUpdate}
       />
     </main>
   );

@@ -41,3 +41,10 @@ import { updateCategory } from './category/_update-category';
 export const DELETE_CATEGORY_PRODUCT_MUTATION = deleteCategoryProduct;
 export const DELETE_CATEGORY_MUTATION = deleteCategory;
 export const UPDATE_CATEGORY_MUTATION = updateCategory;
+
+// Invoice mutation exports
+import { updateStatusInvoice } from './invoice/_update-status-invoice';
+import { deleteInvoice } from './invoice/_delete-invoice';
+
+export const TOGGLE_STATUS_INVOICE_MUTATION = updateStatusInvoice;
+export const DELETE_INVOICE_MUTATION = deleteInvoice;

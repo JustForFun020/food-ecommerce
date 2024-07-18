@@ -125,5 +125,13 @@ export const INVOICE_FIELD = gql`
     user {
       id
     }
+    products {
+      id
+      name
+      price
+      images {
+        imageUrl
+      }
+    }
   }
 `;

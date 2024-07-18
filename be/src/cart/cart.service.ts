@@ -48,6 +48,7 @@ export class CartService {
 
   async addProductToCart(createCartProductDto: CreateCartProductsDto) {
     const { pid, cid, quantity, uid } = createCartProductDto;
+    console.log(createCartProductDto);
     const product = await this.productRepository.findOne({
       where: { id: pid },
       relations: ['images'],
@@ -55,6 +56,12 @@ export class CartService {
     let cart = await this.cartRepository.findOne({
       where: { id: cid },
     });
+    const isExistDefaultCart = await this.cartRepository.findOne({
+      where: { user: { id: uid }, name: 'Default Cart' },
+    });
+    if (isExistDefaultCart && cid === 0) {
+      cart = isExistDefaultCart;
+    }
     const currentUser = await this.userRepository.findOne({
       where: { id: uid },
     });
