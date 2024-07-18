@@ -3,11 +3,7 @@ import _ from 'lodash';
 import { Cart, CartProducts } from '@/utils/types/cart';
 import { Drawer, Button, Input, Form, Divider, Image } from 'antd';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import {
-  UPDATE_BASIC_INFORMATION_CART_MUTATION,
-  UPDATE_CART_MUTATION,
-  UPDATE_CART_PRODUCT_QUANTITY_MUTATION,
-} from '@/lib/graphql/mutation';
+import { UPDATE_CART_MUTATION } from '@/lib/graphql/mutation';
 import { useMutation } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { setBasicInformationCart, setProductQuantity } from '@/lib/redux/cart/reducer';
@@ -86,6 +82,7 @@ const EditCart = (props: EditCartProps) => {
               quantity: p.quantity,
               pid: Number(p.product.id),
               cid: Number(selectedCart.id),
+              uid: Number(currentUser.id),
             };
           }),
         },

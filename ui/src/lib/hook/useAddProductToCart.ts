@@ -11,18 +11,14 @@ type Cart = {
 };
 
 type AddProductToCartDto = {
-  carts: {
-    name: string;
-    description: string;
-    topic: string;
-    uid: number;
-  };
+  cid: number;
   pid: number;
   quantity: number;
+  uid: number;
 };
 
 export const useAddProductToCart = (
-  cart: Cart | undefined,
+  cid: number | undefined,
   pid: number,
   quantity: number,
   handle?: {
@@ -42,23 +38,12 @@ export const useAddProductToCart = (
     topic: 'Default',
   };
 
-  const addProductDto: AddProductToCartDto = cart
-    ? {
-        carts: {
-          ...cart,
-          uid: Number(currentUser.id ?? 0),
-        },
-        pid: Number(pid),
-        quantity,
-      }
-    : {
-        carts: {
-          ...defaultCart,
-          uid: Number(currentUser.id ?? 0),
-        },
-        pid: Number(pid),
-        quantity,
-      };
+  const addProductDto: AddProductToCartDto = {
+    cid: cid ? Number(cid) : 0,
+    pid: Number(pid),
+    quantity: Number(quantity),
+    uid: Number(currentUser?.id) ?? 0,
+  };
 
   const [addProductToCart, { loading, data, error }] = useMutation(ADD_PRODUCT_TO_CART_MUTATION, {
     variables: { addProductDto },

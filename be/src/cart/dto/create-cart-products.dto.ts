@@ -12,4 +12,7 @@ export class CreateCartProductsDto {
 
   @Field()
   cid: number;
+
+  @Field()
+  uid: number;
 }
