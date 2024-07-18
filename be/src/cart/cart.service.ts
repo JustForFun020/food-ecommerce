@@ -7,8 +7,7 @@ import { Repository } from 'typeorm';
 import { CartProducts } from './entity/cart-products.entity';
 import { CreateCartDto } from './dto/create-cart.dto';
 import { CreateCartProductsDto } from './dto/create-cart-products.dto';
-import { UpdateBasicInformationCartDto } from './dto/update-info-cart.dto';
-import { UpdateCartProductQuantityDto } from './dto/update-cart-product-quantity.dto';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -48,22 +47,22 @@ export class CartService {
   }
 
   async addProductToCart(createCartProductDto: CreateCartProductsDto) {
-    const { pid, carts, quantity } = createCartProductDto;
+    const { pid, cid, quantity } = createCartProductDto;
     const product = await this.productRepository.findOne({
       where: { id: pid },
       relations: ['images'],
     });
     let cart = await this.cartRepository.findOne({
-      where: { name: carts.name },
+      where: { id: cid },
     });
     const currentUser = await this.userRepository.findOne({
-      where: { id: carts.uid },
+      where: { id: cart.user.id },
     });
     if (!cart) {
       cart = new Cart({
-        name: carts.name,
-        description: carts.description,
-        topic: carts.topic,
+        name: cart.name,
+        description: cart.description,
+        topic: cart.topic,
         user: currentUser,
       });
       await this.cartRepository.save(cart);
@@ -123,36 +122,37 @@ export class CartService {
     return 'Product deleted';
   }
 
-  async updateCartProductQuantity(
-    updateCartProductQuantityDto: UpdateCartProductQuantityDto[],
-  ) {
-    updateCartProductQuantityDto.map(async (cartProduct) => {
-      const { pid, quantity, cid } = cartProduct;
-      if (quantity <= 0) {
-        return 'Quantity must be greater than 0';
-      }
-      await this.cartProductsRepository.update(
-        { cart: { id: cid }, product: { id: pid } },
-        { quantity },
-      );
+  async updateCart(updateCartDto: UpdateCartDto) {
+    const { uid, cartProducts, cid } = updateCartDto;
+    const currentUser = await this.userRepository.findOne({
+      where: { id: uid },
     });
-    return 'Product quantity updated';
-  }
-
-  async updateBasicInformationCart(
-    updateBasicInfoDt0: UpdateBasicInformationCartDto,
-  ) {
-    const { cid } = updateBasicInfoDt0;
     const cart = await this.cartRepository.findOne({
-      where: { id: cid },
+      where: { user: currentUser, id: cid },
     });
-    if (!cart) {
-      return new HttpException('Cart not found', HttpStatus.BAD_REQUEST);
-    }
-    const { name, description, topic } = updateBasicInfoDt0;
-    cart.name = name;
-    cart.description = description;
-    cart.topic = topic;
-    return await this.cartRepository.save(cart);
+    await Promise.all(
+      cartProducts.map(async (cartProduct) => {
+        const { pid, quantity, cid } = cartProduct;
+        const item = await this.cartProductsRepository.findOne({
+          where: { cart: { id: cid }, product: { id: pid } },
+        });
+        const newProductCart = new CartProducts({
+          ...item,
+          quantity,
+        });
+        await this.cartProductsRepository.update(
+          { cart: { id: cid }, product: { id: pid } },
+          newProductCart,
+        );
+      }),
+    );
+    const newCart = new Cart({
+      ...cart,
+      name: updateCartDto.name,
+      description: updateCartDto.description,
+      topic: updateCartDto.topic,
+    });
+    await this.cartRepository.update({ id: cid }, newCart);
+    return newCart;
   }
 }

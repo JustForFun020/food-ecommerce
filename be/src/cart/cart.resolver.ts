@@ -6,8 +6,7 @@ import { Roles } from 'src/user/decorator/role.decorator';
 import { CartProducts } from './entity/cart-products.entity';
 import { CreateCartProductsDto } from './dto/create-cart-products.dto';
 import { Cart } from './entity/cart.entity';
-import { UpdateBasicInformationCartDto } from './dto/update-info-cart.dto';
-import { UpdateCartProductQuantityDto } from './dto/update-cart-product-quantity.dto';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Resolver()
 export class CartResolver {
@@ -41,37 +40,18 @@ export class CartResolver {
 
   @UseGuards(UserRolesGuard)
   @Roles(['USER'])
-  @Mutation(() => Cart)
-  async updateBasicInfoCart(
-    @Args('updateBasicInfoCartDto')
-    updateBasicInfoCartDto: UpdateBasicInformationCartDto,
-  ) {
-    return await this.cartService.updateBasicInformationCart(
-      updateBasicInfoCartDto,
-    );
-  }
-
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER'])
-  @Mutation(() => String)
-  async updateCartProductQuantity(
-    @Args('updateCartProductQuantityDto', {
-      type: () => [UpdateCartProductQuantityDto],
-    })
-    updateCartProductQuantityDto: UpdateCartProductQuantityDto[],
-  ) {
-    return await this.cartService.updateCartProductQuantity(
-      updateCartProductQuantityDto,
-    );
-  }
-
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER'])
   @Mutation(() => String)
   async deleteProductFromCart(
     @Args('pid') pid: number,
     @Args('cid') cid: number,
   ) {
     return await this.cartService.deleteProductFromCart(pid, cid);
+  }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['USER'])
+  @Mutation(() => Cart)
+  async updateCart(@Args('updateCartDto') updateCartDto: UpdateCartDto) {
+    return await this.cartService.updateCart(updateCartDto);
   }
 }

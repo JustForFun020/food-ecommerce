@@ -23,7 +23,9 @@ export class Cart extends AbstractEntity<Cart> {
   @Field(() => User)
   user: User;
 
-  @OneToMany(() => CartProducts, (cartProducts) => cartProducts.cart)
+  @OneToMany(() => CartProducts, (cartProducts) => cartProducts.cart, {
+    cascade: true,
+  })
   @Field(() => [CartProducts])
   cartProducts: CartProducts[];
 }

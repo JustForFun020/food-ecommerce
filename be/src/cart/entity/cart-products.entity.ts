@@ -7,7 +7,7 @@ import { AbstractEntity } from 'src/database/abstract.entity';
 @ObjectType()
 @Entity()
 export class CartProducts extends AbstractEntity<CartProducts> {
-  @ManyToOne(() => Cart, (cart) => cart.cartProducts, { cascade: true })
+  @ManyToOne(() => Cart, (cart) => cart.cartProducts)
   @Field(() => Cart)
   cart: Cart;
 

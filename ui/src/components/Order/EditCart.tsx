@@ -3,7 +3,11 @@ import _ from 'lodash';
 import { Cart, CartProducts } from '@/utils/types/cart';
 import { Drawer, Button, Input, Form, Divider, Image } from 'antd';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import { UPDATE_BASIC_INFORMATION_CART_MUTATION, UPDATE_CART_PRODUCT_QUANTITY_MUTATION } from '@/lib/graphql/mutation';
+import {
+  UPDATE_BASIC_INFORMATION_CART_MUTATION,
+  UPDATE_CART_MUTATION,
+  UPDATE_CART_PRODUCT_QUANTITY_MUTATION,
+} from '@/lib/graphql/mutation';
 import { useMutation } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { setBasicInformationCart, setProductQuantity } from '@/lib/redux/cart/reducer';
@@ -30,18 +34,9 @@ const EditCart = (props: EditCartProps) => {
 
   const { currentUser } = useAuththor();
 
-  useEffect(() => {
-    setBasicInformationCart({
-      name: selectedCart.name,
-      topic: selectedCart.topic,
-      description: selectedCart.description,
-    });
-  }, [setBasicInformationCart, selectedCart]);
-
-  const [updateBasicInformationCart] = useMutation(UPDATE_BASIC_INFORMATION_CART_MUTATION, {
+  const [updateCart, { loading }] = useMutation(UPDATE_CART_MUTATION, {
     refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: currentUser.id } }],
   });
-  const [updateProductQuantity, { loading }] = useMutation(UPDATE_CART_PRODUCT_QUANTITY_MUTATION, {});
 
   const [form] = Form.useForm();
   const { cartProducts: products } = selectedCart;
@@ -78,21 +73,21 @@ const EditCart = (props: EditCartProps) => {
   };
 
   const handleUpdateCart = () => {
-    const updateCartProductQuantityDto = _.map(productSelected, (p) => {
-      return {
-        quantity: p.quantity,
-        pid: Number(p.product.id),
-        cid: Number(selectedCart.id),
-      };
-    });
-    updateProductQuantity({ variables: { updateCartProductQuantityDto } });
-    updateBasicInformationCart({
+    updateCart({
       variables: {
-        updateBasicInformationCartDto: {
-          cid: Number(selectedCart.id),
+        updateCartDto: {
           name: cartInfo.name,
           topic: cartInfo.topic,
           description: cartInfo.description,
+          uid: Number(currentUser.id),
+          cid: Number(selectedCart.id),
+          cartProducts: _.map(productSelected, (p) => {
+            return {
+              quantity: p.quantity,
+              pid: Number(p.product.id),
+              cid: Number(selectedCart.id),
+            };
+          }),
         },
       },
     });
@@ -135,8 +130,8 @@ const EditCart = (props: EditCartProps) => {
               <Input name='topic' onChange={onInputChange} />
             </Form.Item>
           </Form>
-          <p>Total products: {_.sumBy(products, (p: any) => p.quantity)}</p>
-          <p>Total price: $ {_.sumBy(products, (p: any) => p.product.price * p.quantity).toFixed(2)}</p>
+          <p>Total products: {_.sumBy(products, (p: CartProducts) => p.quantity)}</p>
+          <p>Total price: $ {_.sumBy(products, (p: CartProducts) => p.product.price * p.quantity).toFixed(2)}</p>
         </div>
         <div className='mt-4'>
           <h1 className='text-center font-medium text-2xl'>List Products</h1>
