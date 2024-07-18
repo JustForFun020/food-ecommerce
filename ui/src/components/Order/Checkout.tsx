@@ -4,6 +4,7 @@ import React from 'react';
 import { Cart, CartProducts } from '@/utils/types/cart';
 import { useMutation } from '@apollo/client';
 import { CREATE_INVOICE_MUTATION } from '@/lib/graphql/mutation';
+import { useAuththor } from '@/lib/hook/useAuththor';
 
 interface CheckoutProps {
   selectedCart: Cart;
@@ -13,6 +14,7 @@ interface CheckoutProps {
 
 const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }: CheckoutProps) => {
   const { cartProducts: products } = selectedCart;
+  const { currentUser } = useAuththor();
 
   const [createInvoice, { loading: createInvoiceLoading }] = useMutation(CREATE_INVOICE_MUTATION, {
     onCompleted: () => {
@@ -29,7 +31,7 @@ const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }:
     createInvoice({
       variables: {
         createInvoiceDto: {
-          cartId: Number(selectedCart.id),
+          userId: Number(currentUser?.id),
           price: totalPrice,
           name: `Invoice ${selectedCart.name}`,
         },

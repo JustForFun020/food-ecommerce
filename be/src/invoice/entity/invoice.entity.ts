@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { AbstractEntity } from 'src/database/abstract.entity';
+import { User } from 'src/user/entity/user.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
-import { Cart } from './cart.entity';
 
 @Entity()
 @ObjectType()
@@ -22,7 +22,7 @@ export class Invoice extends AbstractEntity<Invoice> {
   @Field({ defaultValue: new Date() })
   createdAt: Date;
 
-  @ManyToOne(() => Cart, (cart) => cart.invoice)
-  @Field(() => Cart)
-  cart: Cart;
+  @ManyToOne(() => User, (user) => user.invoices)
+  @Field(() => User)
+  user: User;
 }

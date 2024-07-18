@@ -27,7 +27,8 @@ const SignUp = () => {
     },
     onCompleted: (data) => {
       const res = _.get(data, 'signup', {});
-      localStorage.setItem('token', res.data.signup.token);
+      localStorage.setItem('token', res.token);
+      localStorage.setItem('username', signUpDto.username);
       router.push('/');
       form.resetFields();
     },

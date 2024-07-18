@@ -8,6 +8,7 @@ import type { UploadFile } from 'antd';
 import type { UploadChangeParam } from 'antd/es/upload';
 import { useMutation } from '@apollo/client';
 import { CREATE_PRODUCT_MUTATION } from '@/lib/graphql/mutation';
+import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 
 interface ProductCategories {
   name: string;
@@ -31,6 +32,7 @@ const AdminAddProduct = () => {
     onError: (error) => {
       message.error(error.message);
     },
+    refetchQueries: [{ query: GET_ALL_PRODUCTS_QUERY, variables: { page: 1, limit: 10000 } }],
   });
 
   const categories = [

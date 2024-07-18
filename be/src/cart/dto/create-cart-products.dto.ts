@@ -1,6 +1,5 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsNumber } from 'class-validator';
-import { CreateCartDto } from './create-cart.dto';
 
 @InputType()
 export class CreateCartProductsDto {
@@ -11,6 +10,6 @@ export class CreateCartProductsDto {
   @Field()
   pid: number;
 
-  @Field(() => CreateCartDto)
-  carts: CreateCartDto;
+  @Field()
+  cid: number;
 }

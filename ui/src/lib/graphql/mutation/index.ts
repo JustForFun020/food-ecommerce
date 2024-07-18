@@ -23,17 +23,15 @@ export const CREATE_RATE_MUTATION = createRate;
 // Cart mutation exports
 import { addProductToCart } from './cart/_add-to-cart';
 import { deleteCart } from './cart/_delete-cart';
-import { updateBasicInformationCart } from './cart/_update-info-cart';
-import { updateCartProductQuantity } from './cart/_update-cart-quantity';
 import { deleteProductFromCart } from './cart/_delete-product-from-cart';
 import { createInvoice } from './cart/_create-invoice';
+import { updateCart } from './cart/_update-cart';
 
 export const ADD_PRODUCT_TO_CART_MUTATION = addProductToCart;
 export const DELETE_CART_MUTATION = deleteCart;
-export const UPDATE_BASIC_INFORMATION_CART_MUTATION = updateBasicInformationCart;
-export const UPDATE_CART_PRODUCT_QUANTITY_MUTATION = updateCartProductQuantity;
 export const DELETE_PRODUCT_FROM_CART_MUTATION = deleteProductFromCart;
 export const CREATE_INVOICE_MUTATION = createInvoice;
+export const UPDATE_CART_MUTATION = updateCart;
 
 // Category mutation exports
 import { deleteCategory } from './category/_delete-category';
