@@ -56,13 +56,7 @@ export class UserService {
           name: 'USER',
         },
       },
-      relations: [
-        'carts',
-        'carts.cartProducts',
-        'rates',
-        'carts.invoice',
-        'roles',
-      ],
+      relations: ['carts', 'carts.cartProducts', 'rates', 'roles', 'invoices'],
     });
     return users;
   }

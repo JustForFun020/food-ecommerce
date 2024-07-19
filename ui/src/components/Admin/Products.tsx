@@ -1,20 +1,26 @@
 'use client';
 
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { Button, Drawer, Image, message, Table } from 'antd';
+import React, { useState } from 'react';
+import { Button, Image, message, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useRouter } from 'next/navigation';
-import AdminCategories from './Categories';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
-import { Categories, Product, ProductImage } from '@/utils/types/product';
-import { revalidatePath } from 'next/cache';
+import { Product, ProductImage } from '@/utils/types/product';
+import EditProduct from './Product/EditProduct';
+import { useRefreshTable } from '@/lib/hook/useRefreshTable';
 
 const AdminProducts = () => {
   const [isVisitableDrawer, setIsVisitableDrawer] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [categoriesUpdate, setCategoriesUpdate] = useState<Categories>({} as Categories);
+
+  const { refreshData } = useRefreshTable(GET_ALL_PRODUCTS_QUERY, {
+    variables: {
+      page: 1,
+      limit: 10000,
+    },
+  });
 
   const router = useRouter();
 
@@ -22,13 +28,6 @@ const AdminProducts = () => {
     onError: (error) => {
       message.error(error.message);
     },
-    variables: {
-      page: 1,
-      limit: 10000,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
-  const [getAllProduct] = useLazyQuery(GET_ALL_PRODUCTS_QUERY, {
     variables: {
       page: 1,
       limit: 10000,
@@ -46,7 +45,6 @@ const AdminProducts = () => {
       images: product.images,
     };
   });
-  console.log(products);
 
   const columns: TableProps<any>['columns'] = [
     {
@@ -84,46 +82,11 @@ const AdminProducts = () => {
 
   const openProductDrawer = (product: Product) => {
     return (
-      <Drawer
-        title={`Product: ${product?.name}`}
-        zIndex={123142342}
-        placement='right'
-        closable={true}
-        open={isVisitableDrawer}
-        onClose={() => setIsVisitableDrawer(false)}
-        width={800}
-        extra={[
-          <Button className='mr-6' key={'delete'} danger>
-            Delete
-          </Button>,
-          <Button key={'update'} type='primary'>
-            Update
-          </Button>,
-        ]}
-      >
-        <div className='flex'>
-          <Image
-            className='w-1/3'
-            src={product?.images[0].imageUrl}
-            alt={product?.images[0].image}
-            width={300}
-            height={300}
-          />
-          <div className='ml-8 w-2/3'>
-            <h1 className='text-2xl font-medium opacity-80 mb-2'>Common Information</h1>
-            <ul className='*:leading-7'>
-              <li>ID: {product?.id}</li>
-              <li>Name: {product?.name}</li>
-              <li>Price: ${product?.price}</li>
-              <li>Category: {product?.categories.name}</li>
-            </ul>
-          </div>
-        </div>
-        <div className='mt-12'>
-          <h1 className='text-2xl font-medium opacity-80 mb-2'>Description</h1>
-          <p>{product?.description}</p>
-        </div>
-      </Drawer>
+      <EditProduct
+        product={product}
+        isVisitableDrawer={isVisitableDrawer}
+        setIsVisitableDrawer={setIsVisitableDrawer}
+      />
     );
   };
 
@@ -133,10 +96,9 @@ const AdminProducts = () => {
         <div className='flex justify-between p-10 border border-slate-100 rounded-xl mb-10'>
           <div>
             <h1 className='text-2xl font-medium opacity-80 mb-2'>Common Information</h1>
-            <ul className='*:leading-7'>
-              <li>Total Product: 12312</li>
-              <li>Total Stock: 2312</li>
-              <li>Total Price: $12321312</li>
+            <ul className='*:leading-7 *:text-lg'>
+              <li>Total Product: {products?.length ?? 0}</li>
+              <li>Total Price: $ {_.sumBy(products, 'price')}</li>
             </ul>
           </div>
           <div>
@@ -156,7 +118,7 @@ const AdminProducts = () => {
           title={() => (
             <div className='relative'>
               <div className='text-center text-4xl opacity-80 tracking-wider font-bold'>List Product</div>
-              <Button className='absolute top-2 right-3' type='primary' onClick={() => getAllProduct()}>
+              <Button className='absolute top-2 right-3' type='primary' onClick={() => refreshData()}>
                 Refresh
               </Button>
             </div>

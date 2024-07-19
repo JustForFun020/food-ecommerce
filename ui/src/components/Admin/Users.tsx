@@ -71,18 +71,10 @@ const AdminUsers = () => {
     },
     {
       title: 'Total Purchase',
-      dataIndex: 'totalPurchase',
-      key: 'totalPurchase',
-      render: (carts: Cart) => {
-        const totalPurchase = carts?.invoice
-          ? _.reduce<Invoice, number>(
-              carts?.invoice,
-              (acc, item: any) => {
-                return acc + item.price;
-              },
-              0,
-            )
-          : 0;
+      dataIndex: 'invoices',
+      key: 'invoices',
+      render: (invoices: Invoice[]) => {
+        const totalPurchase = _.sumBy(invoices, 'price');
         return <div>{totalPurchase}</div>;
       },
     },
@@ -95,7 +87,7 @@ const AdminUsers = () => {
   return (
     <div className='p-8'>
       <div className='mb-10'>
-        <p>Total Users</p>
+        <p>Total Users: {dataSource?.length ?? 0}</p>
       </div>
 
       <Table

@@ -21,7 +21,7 @@ const AdminCategories = () => {
 
   const [deleteCategory] = useMutation(DELETE_CATEGORY_MUTATION, {
     variables: {
-      id: selectedCategory.id,
+      id: Number(selectedCategory.id),
     },
     onCompleted: () => {
       setIsModalVisible(false);
@@ -51,7 +51,7 @@ const AdminCategories = () => {
       align: 'center',
       width: 300,
       render: (src) => {
-        return <Image src={src} alt='' width={100} height={100} className='m-auto' />;
+        return <Image src={''} alt='' width={100} height={100} className='m-auto' />;
       },
     },
     {
@@ -121,8 +121,7 @@ const AdminCategories = () => {
 
   return (
     <div>
-      <div className='flex justify-between p-10 border border-slate-100 rounded-xl mb-10'>
-        <div>Some information about categories</div>
+      <div className='p-10 border border-slate-100 rounded-xl mb-4 text-right'>
         <Button type='primary'>Add Categories</Button>
       </div>
       <Table

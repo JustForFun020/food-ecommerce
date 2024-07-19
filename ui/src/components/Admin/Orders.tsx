@@ -72,11 +72,12 @@ const AdminOrders = () => {
   ];
 
   if (loading) return <div>Loading...</div>;
+
   return (
     <main className='p-10'>
       <div className='mb-10'>
-        <p>
-          Revenue:{' '}
+        <p className='text-lg font-medium'>
+          Revenue: ${' '}
           {_.reduce(
             listInvoice,
             (acc, curr) => {
