@@ -21,7 +21,10 @@ export class InvoiceService {
     const { userId, pid } = createInvoiceDto;
     const listProducts = await Promise.all(
       pid.map(async (id) => {
-        const product = await this.productRepository.findOne({ where: { id } });
+        const product = await this.productRepository.findOne({
+          where: { id },
+          relations: ['images'],
+        });
         return product;
       }),
     );
