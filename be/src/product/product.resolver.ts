@@ -8,6 +8,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UploadImageDto } from './dto/upload-image.dto';
 import { Public } from 'src/auth/decorator/isPublic.decorator';
 import { Products } from './model/products.model';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Resolver()
 export class ProductResolver {
@@ -57,5 +58,14 @@ export class ProductResolver {
   @Query(() => [Product])
   async searchProduct(@Args('name') name: string) {
     return this.productService.searchProduct(name);
+  }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Mutation(() => Product)
+  async updateProduct(
+    @Args('updateProductDto') updateProductDto: UpdateProductDto,
+  ) {
+    return this.productService.updateProduct(updateProductDto);
   }
 }

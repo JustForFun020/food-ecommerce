@@ -128,7 +128,9 @@ export class ProductService {
     return products;
   }
 
-  async updateProduct(id: number, updateProduct: UpdateProductDto) {
+  async updateProduct(updateProduct: UpdateProductDto) {
+    const { id } = updateProduct;
+
     const product = await this.productRepository.findOne({
       where: { id },
     });

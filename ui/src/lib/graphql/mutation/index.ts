@@ -9,6 +9,7 @@ export const SIGNUP_MUTATION = signup;
 import { createProduct } from './product/_create-product';
 
 export const CREATE_PRODUCT_MUTATION = createProduct;
+export const UPDATE_PRODUCT_MUTATION = updateProduct;
 
 // User mutation exports
 import { updateUser } from './user/_update-user';
@@ -45,6 +46,7 @@ export const UPDATE_CATEGORY_MUTATION = updateCategory;
 // Invoice mutation exports
 import { updateStatusInvoice } from './invoice/_update-status-invoice';
 import { deleteInvoice } from './invoice/_delete-invoice';
+import { updateProduct } from './product/_update-product';
 
 export const TOGGLE_STATUS_INVOICE_MUTATION = updateStatusInvoice;
 export const DELETE_INVOICE_MUTATION = deleteInvoice;

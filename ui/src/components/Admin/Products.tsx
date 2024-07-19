@@ -1,7 +1,7 @@
 'use client';
 
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Image, message, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useRouter } from 'next/navigation';
