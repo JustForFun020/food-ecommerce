@@ -7,8 +7,11 @@ export const USER_FIELD = gql`
     phone
     email
     avatar
+    username
     invoices {
       name
+      price
+      createdAt
     }
     carts {
       name

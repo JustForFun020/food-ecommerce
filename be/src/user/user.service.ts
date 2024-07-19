@@ -20,7 +20,7 @@ export class UserService {
   async getUserByUsername(username: string) {
     const user = await this.userRepository.findOne({
       where: { username },
-      relations: ['carts'],
+      relations: ['carts', 'invoices'],
     });
 
     if (!user) {
@@ -33,9 +33,9 @@ export class UserService {
   }
 
   async updateUser(updateUserDto: UpdateUserDto) {
-    const { email } = updateUserDto;
+    const { username } = updateUserDto;
     const user = await this.userRepository.findOne({
-      where: { email },
+      where: { username },
     });
     const newUser = new User({
       ...user,
