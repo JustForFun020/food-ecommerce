@@ -8,6 +8,7 @@ export const GET_ALL_PRODUCTS_QUERY = getAllProducts;
 export const GET_PRODUCT_BY_ID_QUERY = getProductById;
 export const GET_PRODUCT_BY_NAME_QUERY = getProductByName;
 export const GET_PRODUCT_BY_CATEGORY_QUERY = getProductsByCategory;
+export const SEARCH_PRODUCT_QUERY = searchProduct;
 // ------------------------------------------
 
 // Categories quey
@@ -34,5 +35,6 @@ export const GET_ALL_USER_CART = getAllUserCarts;
 
 // Invoice query
 import { getAllInvoice } from './invoice/_get-all-invoice';
+import { searchProduct } from './product/_search-product';
 
 export const GET_ALL_INVOICE_QUERY = getAllInvoice;

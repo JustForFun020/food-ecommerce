@@ -44,7 +44,6 @@ export const PRODUCT_FIELD = gql`
 `;
 
 export const RATE_FIELD = gql`
-  ${USER_FIELD}
   fragment rateField on Rate {
     id
     score

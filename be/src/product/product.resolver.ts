@@ -52,4 +52,10 @@ export class ProductResolver {
   async getProductByCategory(@Args('category') category: string) {
     return this.productService.getProductByCategory(category);
   }
+
+  @Public()
+  @Query(() => [Product])
+  async searchProduct(@Args('name') name: string) {
+    return this.productService.searchProduct(name);
+  }
 }

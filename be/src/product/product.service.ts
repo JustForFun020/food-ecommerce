@@ -171,4 +171,11 @@ export class ProductService {
       throw new HttpException('Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async searchProduct(name: string) {
+    const products = await this.entityManager.query(
+      `SELECT * FROM product WHERE name LIKE '%${name}%'`,
+    );
+    return products;
+  }
 }
