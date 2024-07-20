@@ -1,4 +1,4 @@
-import { INVOICE_FIELD } from './../../fragments/index';
+import { INVOICE_FIELD } from '../../fragments/index';
 import { gql } from '@apollo/client';
 
 export const createInvoice = gql`

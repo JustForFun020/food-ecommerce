@@ -3,13 +3,14 @@
 import _ from 'lodash';
 import React, { useState } from 'react';
 import { GET_USER_BY_USERNAME_QUERY } from '@/lib/graphql/query';
-import { useMutation, useSuspenseQuery } from '@apollo/client';
+import { useSuspenseQuery } from '@apollo/client';
 import { User as UserType } from '@/utils/types/user';
-import { Avatar, Divider, Drawer, Form, Input, message } from 'antd';
+import { Avatar, Divider } from 'antd';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import '@/style/order.css';
-import { UPDATE_USER_MUTATION } from '@/lib/graphql/mutation';
+import EditProfile from './EditProfile';
+import moment from 'moment';
 
 const Profile = ({ username }: { username: string }) => {
   const [isVisitableEditProfile, setIsVisitableEditProfile] = useState(false);
@@ -17,97 +18,16 @@ const Profile = ({ username }: { username: string }) => {
   const { data } = useSuspenseQuery(GET_USER_BY_USERNAME_QUERY, {
     variables: { username },
   });
-  const [updateUser, { loading }] = useMutation(UPDATE_USER_MUTATION, {
-    onCompleted: () => {
-      setIsVisitableEditProfile(false);
-      form.resetFields();
-    },
-    onError: (error) => {
-      message.error(error.message);
-    },
-    refetchQueries: [{ query: GET_USER_BY_USERNAME_QUERY, variables: { username } }],
-  });
 
   const user: UserType = _.get(data, 'getUserByUsername', {}) as UserType;
 
-  const [form] = Form.useForm();
-
-  const onFinish = (values: { email: string; phone: string; address: string }) => {
-    updateUser({
-      variables: {
-        updateUserDto: values,
-      },
-    });
-  };
-
   const renderDrawerEditProfile = () => {
     return (
-      <Drawer
-        title={
-          <div>
-            Edit Profile: <span className='text-gray-500'>{user.username}</span>
-          </div>
-        }
-        placement='right'
-        size='large'
-        open={isVisitableEditProfile}
-        onClose={() => setIsVisitableEditProfile(false)}
-      >
-        <Form
-          onFinish={onFinish}
-          form={form}
-          initialValues={{
-            username: user.username,
-            address: user.address,
-            phone: user.phone,
-            email: user.email,
-          }}
-          labelAlign='left'
-          labelCol={{ span: 6 }}
-        >
-          <Form.Item label='Address' name='address'>
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label='Phone'
-            name='phone'
-            rules={[
-              {
-                validator: (_, value) => {
-                  const phoneRegex = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/;
-                  if (phoneRegex.test(value)) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject('Phone number is invalid!');
-                },
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item
-            label='Email'
-            name='email'
-            rules={[
-              {
-                required: true,
-                message: 'Please input your email!',
-              },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item className='text-right'>
-            <button
-              type='submit'
-              className='pt-3 pb-3 pr-4 pl-4 border border-slate-300 rounded-md bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.3)] hover:opacity-95 transition-all duration-200'
-              disabled={loading}
-            >
-              Save
-            </button>
-          </Form.Item>
-        </Form>
-      </Drawer>
+      <EditProfile
+        user={user}
+        isVisitableEditProfile={isVisitableEditProfile}
+        setIsVisitableEditProfile={setIsVisitableEditProfile}
+      />
     );
   };
 
@@ -160,10 +80,23 @@ const Profile = ({ username }: { username: string }) => {
       </div>
       <Divider />
       <div>
-        {_.isEmpty(user.carts) ? (
-          <div className='order__content min-h-screen mt-6 pr-20 pl-20'>{renderEmptyCartLayout()}</div>
+        <h1 className='text-2xl font-bold tracking-wide mb-5 opacity-75'>Purchases history</h1>
+        {_.isEmpty(user.invoices) ? (
+          <div>You dont have any invoices</div>
         ) : (
-          <div>Cart</div>
+          <ul className='*:leading-8'>
+            {_.map(user.invoices, (invoice) => {
+              return (
+                <li className='flex justify-between items-center pt-4 pb-4 pr-10 pl-10 border border-slate-200 rounded-md shadow-md mb-5'>
+                  <p className='flex flex-col *:leading-8'>
+                    <span className='font-medium'>{invoice.name}</span>
+                    <span className='opacity-65'>{moment(invoice.createdAt).format('HH:mm DD/MM/YYYY')}</span>
+                  </p>
+                  <p className='font-medium opacity-65'>$ {invoice.price}</p>
+                </li>
+              );
+            })}
+          </ul>
         )}
       </div>
       {renderDrawerEditProfile()}

@@ -3,11 +3,7 @@ import _ from 'lodash';
 import { Cart, CartProducts } from '@/utils/types/cart';
 import { Drawer, Button, Input, Form, Divider, Image } from 'antd';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import {
-  UPDATE_BASIC_INFORMATION_CART_MUTATION,
-  UPDATE_CART_MUTATION,
-  UPDATE_CART_PRODUCT_QUANTITY_MUTATION,
-} from '@/lib/graphql/mutation';
+import { UPDATE_CART_MUTATION } from '@/lib/graphql/mutation';
 import { useMutation } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { setBasicInformationCart, setProductQuantity } from '@/lib/redux/cart/reducer';
@@ -22,15 +18,21 @@ interface EditCartProps extends PropsFromRedux {
 
 const EditCart = (props: EditCartProps) => {
   const [productSelected, setProductSelected] = useState<CartProducts[]>([] as CartProducts[]);
+  const [defaultCartInfo, setDefaultCartInfo] = useState({
+    name: '',
+    topic: '',
+    description: '',
+  });
 
-  const {
-    selectedCart,
-    isVisitableEditCart,
-    cartInfo,
-    cartProducts: cartProductsStore,
-    setIsVisitableEditCart,
-    setBasicInformationCart,
-  } = props;
+  const { selectedCart, isVisitableEditCart, setIsVisitableEditCart } = props;
+
+  useEffect(() => {
+    setDefaultCartInfo({
+      name: selectedCart.name,
+      topic: selectedCart.topic,
+      description: selectedCart.description,
+    });
+  }, [selectedCart]);
 
   const { currentUser } = useAuththor();
 
@@ -42,12 +44,7 @@ const EditCart = (props: EditCartProps) => {
   const { cartProducts: products } = selectedCart;
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const cartInfo = {
-      name: selectedCart.name,
-      topic: selectedCart.topic,
-      description: selectedCart.description,
-    };
-    setBasicInformationCart({ ...cartInfo, [e.target.name]: e.target.value });
+    setDefaultCartInfo({ ...defaultCartInfo, [e.target.name]: e.target.value });
   };
 
   const onProductQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,9 +73,7 @@ const EditCart = (props: EditCartProps) => {
     updateCart({
       variables: {
         updateCartDto: {
-          name: cartInfo.name,
-          topic: cartInfo.topic,
-          description: cartInfo.description,
+          ...defaultCartInfo,
           uid: Number(currentUser.id),
           cid: Number(selectedCart.id),
           cartProducts: _.map(productSelected, (p) => {
@@ -86,6 +81,7 @@ const EditCart = (props: EditCartProps) => {
               quantity: p.quantity,
               pid: Number(p.product.id),
               cid: Number(selectedCart.id),
+              uid: Number(currentUser.id),
             };
           }),
         },

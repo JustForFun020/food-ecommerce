@@ -6,6 +6,7 @@ import { Categories } from 'src/categories/entity/categories.entity';
 import { Rate } from 'src/rate/entity/rate.entity';
 import { CartProducts } from 'src/cart/entity/cart-products.entity';
 import { ProductTag } from './product-tag.entity';
+import { Invoice } from 'src/invoice/entity/invoice.entity';
 
 @ObjectType()
 @Entity()
@@ -47,6 +48,10 @@ export class Product extends AbstractEntity<Product> {
   @ManyToMany(() => ProductTag, (ptag) => ptag.products)
   @Field(() => [ProductTag])
   tags: ProductTag[];
+
+  @ManyToMany(() => Invoice, (invoice) => invoice.products)
+  @Field(() => [Invoice])
+  invoices: Invoice[];
 
   @Field()
   get averageRate(): number {

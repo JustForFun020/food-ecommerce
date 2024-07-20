@@ -4,6 +4,10 @@ import { IsNumber, IsString } from 'class-validator';
 @InputType()
 export class UpdateProductDto {
   @Field()
+  @IsNumber()
+  id: number;
+
+  @Field()
   @IsString()
   name: string;
 

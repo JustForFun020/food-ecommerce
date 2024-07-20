@@ -7,7 +7,8 @@ import { CartProducts } from './entity/cart-products.entity';
 import { CreateCartProductsDto } from './dto/create-cart-products.dto';
 import { Cart } from './entity/cart.entity';
 import { UpdateCartDto } from './dto/update-cart.dto';
-
+@UseGuards(UserRolesGuard)
+@Roles(['USER'])
 @Resolver()
 export class CartResolver {
   constructor(
@@ -15,8 +16,6 @@ export class CartResolver {
     private readonly cartService: CartService,
   ) {}
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER'])
   @Mutation(() => CartProducts)
   async addProductToCart(
     @Args('addProductDto') addProductDto: CreateCartProductsDto,
@@ -24,22 +23,18 @@ export class CartResolver {
     return await this.cartService.addProductToCart(addProductDto);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER', 'ADMIN'])
+  @Roles(['ADMIN'])
   @Query(() => [Cart])
   async getAllUserCarts(@Args('uid') uid: number) {
     return await this.cartService.getAllUserCart(uid);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER', 'ADMIN'])
+  @Roles(['ADMIN'])
   @Mutation(() => String)
   async deleteCart(@Args('cid') cid: number) {
     return await this.cartService.deleteCartById(cid);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER'])
   @Mutation(() => String)
   async deleteProductFromCart(
     @Args('pid') pid: number,
@@ -48,8 +43,6 @@ export class CartResolver {
     return await this.cartService.deleteProductFromCart(pid, cid);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['USER'])
   @Mutation(() => Cart)
   async updateCart(@Args('updateCartDto') updateCartDto: UpdateCartDto) {
     return await this.cartService.updateCart(updateCartDto);

@@ -7,6 +7,7 @@ import { ProductResolver } from './product.resolver';
 import { ProductService } from './product.service';
 import { Categories } from 'src/categories/entity/categories.entity';
 import { ProductTag } from './entity/product-tag.entity';
+import { Invoice } from 'src/invoice/entity/invoice.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProductTag } from './entity/product-tag.entity';
       Tag,
       Categories,
       ProductTag,
+      Invoice,
     ]),
   ],
   providers: [ProductResolver, ProductService],

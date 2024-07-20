@@ -14,10 +14,12 @@ export class AuthInterceptor implements NestInterceptor {
     next: CallHandler<any>,
   ): Observable<any> | Promise<Observable<any>> {
     return next.handle().pipe(
-      catchError((error) => {
-        const { response } = error;
+      catchError(() => {
         return throwError(() => {
-          throw new HttpException(response.message, error.status);
+          throw new HttpException(
+            'Invalid username or password. Please try again!',
+            401,
+          );
         });
       }),
     );

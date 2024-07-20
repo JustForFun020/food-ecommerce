@@ -3,14 +3,18 @@
 import _ from 'lodash';
 import { GET_ALL_USERS_QUERY } from '@/lib/graphql/query';
 import { useLazyQuery, useQuery } from '@apollo/client';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { User } from '@/utils/types/user';
 import { Avatar, Button, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Cart, Invoice } from '@/utils/types/cart';
+import { getColumnSearchProps } from './SearchTableColumn';
+import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
 const AdminUsers = () => {
+  const { handleReset, handleSearch, searchInput, searchText, searchedColumn } = useColumnSearch<any>();
+
   const { loading, data } = useQuery(GET_ALL_USERS_QUERY);
   const [refreshGetAllUsers] = useLazyQuery(GET_ALL_USERS_QUERY, {
     fetchPolicy: 'cache-and-network',
@@ -41,6 +45,7 @@ const AdminUsers = () => {
           </span>
         );
       },
+      ...getColumnSearchProps('address', handleSearch, handleReset, { searchInput, searchText, searchedColumn }),
     },
     {
       title: 'Phone',
@@ -71,20 +76,13 @@ const AdminUsers = () => {
     },
     {
       title: 'Total Purchase',
-      dataIndex: 'totalPurchase',
-      key: 'totalPurchase',
-      render: (carts: Cart) => {
-        const totalPurchase = carts?.invoice
-          ? _.reduce<Invoice, number>(
-              carts?.invoice,
-              (acc, item: any) => {
-                return acc + item.price;
-              },
-              0,
-            )
-          : 0;
+      dataIndex: 'invoices',
+      key: 'invoices',
+      render: (invoices: Invoice[]) => {
+        const totalPurchase = _.sumBy(invoices, 'price');
         return <div>{totalPurchase}</div>;
       },
+      sorter: (a, b) => _.sumBy(a.invoices, 'price') - _.sumBy(b.invoices, 'price'),
     },
   ];
 
@@ -95,7 +93,7 @@ const AdminUsers = () => {
   return (
     <div className='p-8'>
       <div className='mb-10'>
-        <p>Total Users</p>
+        <p>Total Users: {dataSource?.length ?? 0}</p>
       </div>
 
       <Table

@@ -5,6 +5,10 @@ import { IsEmail, IsString } from 'class-validator';
 export class UpdateUserDto {
   @Field()
   @IsString()
+  username: string;
+
+  @Field()
+  @IsString()
   address: string;
 
   @Field()

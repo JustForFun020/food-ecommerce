@@ -6,7 +6,8 @@ import { Categories } from './entity/categories.entity';
 import { UserRolesGuard } from 'src/user/guard/user-roles.guard';
 import { Roles } from 'src/user/decorator/role.decorator';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-
+@UseGuards(UserRolesGuard)
+@Roles(['ADMIN'])
 @Resolver()
 export class CategoriesResolver {
   constructor(
@@ -26,15 +27,11 @@ export class CategoriesResolver {
     return await this.categoriesService.getCategoryByName(name);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN'])
   @Mutation(() => String)
   async deleteCategory(@Args('id') id: number) {
     return await this.categoriesService.deleteCategory(id);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN'])
   @Mutation(() => Categories)
   async deleteProductFromCategory(
     @Args('categoryId') categoryId: number,
@@ -46,8 +43,6 @@ export class CategoriesResolver {
     );
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN'])
   @Mutation(() => Categories)
   async updateCategory(
     @Args('updateCategoryDto') updateCategoryDto: UpdateCategoryDto,

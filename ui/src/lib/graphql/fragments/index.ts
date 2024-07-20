@@ -7,8 +7,11 @@ export const USER_FIELD = gql`
     phone
     email
     avatar
+    username
     invoices {
       name
+      price
+      createdAt
     }
     carts {
       name
@@ -44,7 +47,6 @@ export const PRODUCT_FIELD = gql`
 `;
 
 export const RATE_FIELD = gql`
-  ${USER_FIELD}
   fragment rateField on Rate {
     id
     score
@@ -124,6 +126,14 @@ export const INVOICE_FIELD = gql`
     createdAt
     user {
       id
+    }
+    products {
+      id
+      name
+      price
+      images {
+        imageUrl
+      }
     }
   }
 `;

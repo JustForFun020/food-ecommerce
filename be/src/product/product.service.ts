@@ -128,7 +128,9 @@ export class ProductService {
     return products;
   }
 
-  async updateProduct(id: number, updateProduct: UpdateProductDto) {
+  async updateProduct(updateProduct: UpdateProductDto) {
+    const { id } = updateProduct;
+
     const product = await this.productRepository.findOne({
       where: { id },
     });
@@ -170,5 +172,12 @@ export class ProductService {
     } catch (error) {
       throw new HttpException('Error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  async searchProduct(name: string) {
+    const products = await this.entityManager.query(
+      `SELECT * FROM product WHERE name LIKE '%${name}%'`,
+    );
+    return products;
   }
 }

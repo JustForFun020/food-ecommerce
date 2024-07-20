@@ -34,6 +34,7 @@ const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }:
           userId: Number(currentUser?.id),
           price: totalPrice,
           name: `Invoice ${selectedCart.name}`,
+          pid: _.map(products, (p: CartProducts) => Number(p.product.id)),
         },
       },
     });

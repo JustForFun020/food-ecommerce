@@ -8,7 +8,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UploadImageDto } from './dto/upload-image.dto';
 import { Public } from 'src/auth/decorator/isPublic.decorator';
 import { Products } from './model/products.model';
+import { UpdateProductDto } from './dto/update-product.dto';
 
+@Public()
 @Resolver()
 export class ProductResolver {
   constructor(
@@ -16,7 +18,6 @@ export class ProductResolver {
     private readonly productService: ProductService,
   ) {}
 
-  @Public()
   @Query(() => Products)
   async getAllProduct(
     @Args('page') page: number,
@@ -35,21 +36,32 @@ export class ProductResolver {
     return this.productService.createProduct(createProduct, uploadImage);
   }
 
-  @Public()
   @Query(() => Product)
   async getProductById(@Args('id') id: number) {
     return this.productService.getProductById(id);
   }
 
-  @Public()
   @Query(() => Product)
   async getProductByName(@Args('name') name: string) {
     return this.productService.getProductByName(name);
   }
 
-  @Public()
   @Query(() => [Product])
   async getProductByCategory(@Args('category') category: string) {
     return this.productService.getProductByCategory(category);
+  }
+
+  @Query(() => [Product])
+  async searchProduct(@Args('name') name: string) {
+    return this.productService.searchProduct(name);
+  }
+
+  @UseGuards(UserRolesGuard)
+  @Roles(['ADMIN'])
+  @Mutation(() => Product)
+  async updateProduct(
+    @Args('updateProductDto') updateProductDto: UpdateProductDto,
+  ) {
+    return this.productService.updateProduct(updateProductDto);
   }
 }

@@ -1,4 +1,4 @@
-import { Cart } from './cart';
+import { Cart, Invoice } from './cart';
 import { Rate } from './rate';
 
 export type User = {
@@ -13,4 +13,5 @@ export type User = {
     name: 'USER' | 'ADMIN';
     id: number;
   }[];
+  invoices: Invoice[];
 };
