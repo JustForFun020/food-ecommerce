@@ -1,52 +1,52 @@
 // Auth mutation exports
-import { signup } from './user/_signup';
-import { login } from './user/_login';
+import { signup } from './user/signUp';
+import { login } from './user/login';
 
 export const LOGIN_MUTATION = login;
 export const SIGNUP_MUTATION = signup;
 
 // Product mutation exports
-import { createProduct } from './product/_create-product';
+import { createProduct } from './product/createProduct';
+import { updateProduct } from './product/updateProduct';
 
 export const CREATE_PRODUCT_MUTATION = createProduct;
 export const UPDATE_PRODUCT_MUTATION = updateProduct;
 
 // User mutation exports
-import { updateUser } from './user/_update-user';
+import { updateUser } from './user/updateUser';
 
 export const UPDATE_USER_MUTATION = updateUser;
 
 // Rate mutation exports
-import { createRate } from './product/_create-rate';
+import { createRate } from './product/createRate';
 
 export const CREATE_RATE_MUTATION = createRate;
 
 // Cart mutation exports
-import { addProductToCart } from './cart/_add-to-cart';
-import { deleteCart } from './cart/_delete-cart';
-import { deleteProductFromCart } from './cart/_delete-product-from-cart';
-import { createInvoice } from './cart/_create-invoice';
-import { updateCart } from './cart/_update-cart';
+import { addProductToCart } from './cart/addProductToCart';
+import { deleteCart } from './cart/deleteCart';
+import { deleteProductFromCart } from './cart/deleteProductFromCart';
+import { updateCart } from './cart/updateCart';
 
 export const ADD_PRODUCT_TO_CART_MUTATION = addProductToCart;
 export const DELETE_CART_MUTATION = deleteCart;
 export const DELETE_PRODUCT_FROM_CART_MUTATION = deleteProductFromCart;
-export const CREATE_INVOICE_MUTATION = createInvoice;
 export const UPDATE_CART_MUTATION = updateCart;
 
 // Category mutation exports
-import { deleteCategory } from './category/_delete-category';
-import { deleteCategoryProduct } from './category/_delete-category-product';
-import { updateCategory } from './category/_update-category';
+import { deleteCategory } from './category/deleteCategory';
+import { deleteCategoryProduct } from './category/deleteCategoryProduct';
+import { updateCategory } from './category/updateCategory';
 
 export const DELETE_CATEGORY_PRODUCT_MUTATION = deleteCategoryProduct;
 export const DELETE_CATEGORY_MUTATION = deleteCategory;
 export const UPDATE_CATEGORY_MUTATION = updateCategory;
 
 // Invoice mutation exports
-import { updateStatusInvoice } from './invoice/_update-status-invoice';
-import { deleteInvoice } from './invoice/_delete-invoice';
-import { updateProduct } from './product/_update-product';
+import { createInvoice } from './invoice/createInvoice';
+import { updateStatusInvoice } from './invoice/updateStatusInvoice';
+import { deleteInvoice } from './invoice/deleteInvoice';
 
+export const CREATE_INVOICE_MUTATION = createInvoice;
 export const TOGGLE_STATUS_INVOICE_MUTATION = updateStatusInvoice;
 export const DELETE_INVOICE_MUTATION = deleteInvoice;
