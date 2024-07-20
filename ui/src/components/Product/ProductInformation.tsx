@@ -118,8 +118,8 @@ const ProductInformation = ({ name }: { name: string }) => {
             </li>
           </ul>
           <p className='text-lg mt-4 mb-4 opacity-70'>{product.description}</p>
-          <p className='text-lg'>Price: {product.price}$</p>
-          <p className='text-lg'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
+          <p className='text-lg mb-4'>Price: $ {product.price}</p>
+          <p className='text-lg mb-4'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
         </div>
         <Button className='absolute bottom-5 right-5' type='primary' onClick={() => addProductToCart()}>
           Add to cart
