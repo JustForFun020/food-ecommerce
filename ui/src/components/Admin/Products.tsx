@@ -1,19 +1,58 @@
 'use client';
 
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Image, message, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
-import { Product, ProductImage } from '@/utils/types/product';
+import { Categories, Product, ProductImage } from '@/utils/types/product';
 import EditProduct from './Product/EditProduct';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
+import { getColumnSearchProps } from './SearchTableColumn';
+import { useColumnSearch } from '@/lib/hook/useColumnSearch';
+
+interface DataType {
+  id: string;
+  name: string;
+  price: number;
+  category: Categories;
+  image: ProductImage[];
+}
+
+const categories = [
+  {
+    text: 'Vegetables',
+    value: 'Vegetables',
+  },
+  {
+    text: 'Fruits',
+    value: 'Fruits',
+  },
+  {
+    text: 'Fast Food',
+    value: 'Fast Food',
+  },
+  {
+    text: 'Meat',
+    value: 'Meat',
+  },
+  {
+    text: 'Seafood',
+    value: 'Seafood',
+  },
+  {
+    text: 'Beverages',
+    value: 'Beverages',
+  },
+];
 
 const AdminProducts = () => {
   const [isVisitableDrawer, setIsVisitableDrawer] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const { handleReset, handleSearch, searchInput, searchText, searchedColumn } = useColumnSearch<DataType>();
 
   const { refreshData } = useRefreshTable(GET_ALL_PRODUCTS_QUERY, {
     variables: {
@@ -56,11 +95,17 @@ const AdminProducts = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      ...getColumnSearchProps('name', handleSearch, handleReset, {
+        searchInput,
+        searchText,
+        searchedColumn,
+      }),
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
+      sorter: (a: DataType, b: DataType) => a.price - b.price,
     },
     {
       title: 'Category',
@@ -69,6 +114,8 @@ const AdminProducts = () => {
       render: (category) => {
         return <div>{category?.name}</div>;
       },
+      filters: categories,
+      onFilter: (value, record) => record.category.name === value,
     },
     {
       title: 'Image',

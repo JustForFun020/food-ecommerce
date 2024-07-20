@@ -46,6 +46,10 @@ const AdminOrders = () => {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
+      render: (price: number) => {
+        return <span>$ {price}</span>;
+      },
+      sorter: (a, b) => a.price - b.price,
     },
     {
       title: 'Status',
@@ -55,6 +59,11 @@ const AdminOrders = () => {
         const color = status === 'Pending' ? 'orange' : 'green';
         return <Tag color={color}>{status}</Tag>;
       },
+      filters: [
+        { text: 'Pending', value: 'Pending' },
+        { text: 'Confirmed', value: 'Confirmed' },
+      ],
+      onFilter: (value, record) => record.status.indexOf(value) === 0,
     },
     {
       title: 'Created At',
@@ -63,6 +72,7 @@ const AdminOrders = () => {
       render: (date: string) => {
         return <span>{moment(date).format('HH:mm DD/MM/YYYY')}</span>;
       },
+      sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
     },
     {
       title: 'User ID',

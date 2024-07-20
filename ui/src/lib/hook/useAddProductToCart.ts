@@ -4,12 +4,6 @@ import { useAuththor } from './useAuththor';
 import { ADD_PRODUCT_TO_CART_MUTATION } from '../graphql/mutation';
 import { GET_ALL_USER_CART } from '../graphql/query';
 
-type Cart = {
-  name: string;
-  description: string;
-  topic: string;
-};
-
 type AddProductToCartDto = {
   cid: number;
   pid: number;
@@ -31,12 +25,7 @@ export const useAddProductToCart = (
     handleError?: (error?: ApolloError) => any;
   };
 
-  const { currentUser, error: unAuthorError } = useAuththor();
-  const defaultCart: Cart = {
-    name: 'Default Cart',
-    description: 'This is Default cart',
-    topic: 'Default',
-  };
+  const { currentUser } = useAuththor();
 
   const addProductDto: AddProductToCartDto = {
     cid: cid ? Number(cid) : 0,

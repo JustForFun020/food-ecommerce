@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Form, Modal, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { useMutation, useQuery } from '@apollo/client';
@@ -11,11 +11,15 @@ import _ from 'lodash';
 import Image from 'next/image';
 import { DELETE_CATEGORY_MUTATION } from '@/lib/graphql/mutation';
 import AdminEditCategory from './Categories/EditCategory';
+import { getColumnSearchProps } from './SearchTableColumn';
+import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
 const AdminCategories = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Categories>({} as Categories);
+
+  const { handleReset, handleSearch, searchInput, searchText, searchedColumn } = useColumnSearch<any>();
 
   const [form] = Form.useForm();
 
@@ -43,6 +47,7 @@ const AdminCategories = () => {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      ...getColumnSearchProps('name', handleSearch, handleReset, { searchInput, searchText, searchedColumn }),
     },
     {
       title: 'Image',
