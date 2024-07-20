@@ -9,7 +9,7 @@ import { Avatar, Button, Table } from 'antd';
 import type { TableProps } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import { Cart, Invoice } from '@/utils/types/cart';
-import { getColumnSearchProps } from './SearchTableColumn';
+import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
 const AdminUsers = () => {

@@ -28,8 +28,6 @@ export class UserResolver {
     return this.userService.updateUser(updateUserDto);
   }
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN'])
   @Query(() => [User])
   async getAllUser() {
     return this.userService.getAllUser();

@@ -7,7 +7,7 @@ import { Button, Table, Tag, type TableProps } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
-import UpdateInvoice from './Invoice/UpdateInvoice';
+import UpdateInvoice from '../Invoice/UpdateInvoice';
 import { Invoice } from '@/utils/types/cart';
 
 const AdminOrders = () => {

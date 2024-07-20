@@ -9,7 +9,7 @@ import { Rate as RateType } from '@/utils/types/rate';
 import { CREATE_RATE_MUTATION } from '@/lib/graphql/mutation';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import moment from 'moment';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 
 interface CommentProps {
   rating: number;

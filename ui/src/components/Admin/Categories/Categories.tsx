@@ -10,8 +10,8 @@ import { Categories } from '@/utils/types/product';
 import _ from 'lodash';
 import Image from 'next/image';
 import { DELETE_CATEGORY_MUTATION } from '@/lib/graphql/mutation';
-import AdminEditCategory from './Categories/EditCategory';
-import { getColumnSearchProps } from './SearchTableColumn';
+import AdminEditCategory from './EditCategory';
+import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
 const AdminCategories = () => {

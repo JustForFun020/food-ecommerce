@@ -10,7 +10,7 @@ import { GET_PRODUCT_BY_CATEGORY_QUERY, GET_PRODUCT_BY_NAME_QUERY } from '@/lib/
 import { Product as ProductType } from '@/utils/types/product';
 import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 
 const ProductInformation = ({ name }: { name: string }) => {
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {
