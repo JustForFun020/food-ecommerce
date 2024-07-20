@@ -6,6 +6,8 @@ import { Roles } from './decorator/role.decorator';
 import { UserRolesGuard } from './guard/user-roles.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+@UseGuards(UserRolesGuard)
+@Roles(['ADMIN'])
 @Resolver()
 export class UserResolver {
   constructor(
@@ -13,15 +15,14 @@ export class UserResolver {
     private userService: UserService,
   ) {}
 
-  @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN', 'USER'])
+  @Roles(['USER'])
   @Query(() => User)
   async getUserByUsername(@Args('username') username: string) {
     return this.userService.getUserByUsername(username);
   }
 
   @UseGuards(UserRolesGuard)
-  @Roles(['ADMIN', 'USER'])
+  @Roles(['USER'])
   @Mutation(() => User)
   async updateUser(@Args('updateUserDto') updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(updateUserDto);

@@ -7,7 +7,7 @@ import { SignUpResponse } from './response/sign-up.response';
 import { SignUpDto } from './dto/sign-up.dto';
 import { Inject, UseInterceptors } from '@nestjs/common';
 import { AuthInterceptor } from './interceptor/auth.interceptor';
-
+@Public()
 @Resolver()
 export class AuthResolver {
   constructor(
@@ -15,14 +15,12 @@ export class AuthResolver {
     private readonly authService: AuthService,
   ) {}
 
-  @Public()
   @Mutation(() => LoginResponse)
   @UseInterceptors(AuthInterceptor)
   async login(@Args('loginDto') loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @Public()
   @Mutation(() => SignUpResponse)
   async signup(@Args('signUpDto') signUpDto: SignUpDto) {
     return this.authService.signup(signUpDto);
