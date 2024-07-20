@@ -42,7 +42,7 @@ const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }:
 
   return (
     <Modal
-      title={<div>Cart {selectedCart.name} checkout</div>}
+      title={<div className='text-center mb-4 tracking-wide text-2xl'>Checkout: {selectedCart.name} Cart</div>}
       closable={false}
       footer={[
         <Button key={'confirm-checkout'} type='primary' onClick={() => handleCheckout()} loading={createInvoiceLoading}>
@@ -55,11 +55,20 @@ const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }:
       open={isVisitableCheckout}
       onClose={() => setIsVisitableCheckout(false)}
     >
-      <div>
-        <p>Total Product: {_.sumBy(products, (p: any) => p.quantity)} </p>
-        <p>Total Price: $ {_.sumBy(products, (p: any) => p.product.price * p.quantity).toFixed(2)}</p>
-        <p>Topic: {selectedCart.topic}</p>
-        <p>Discount: You have not applied any discount code.</p>
+      <div className='*:leading-8 *:text-lg *:mb-4 *:pb-2 *:border-b *:border-b-slate-200'>
+        <p className='flex justify-between *:font-medium'>
+          <span>Total Product:</span> <span className='opacity-75'>{_.sumBy(products, (p: any) => p.quantity)}</span>{' '}
+        </p>
+        <p className='flex justify-between *:font-medium'>
+          <span>Total Price:</span>{' '}
+          <span className='opacity-75'>$ {_.sumBy(products, (p: any) => p.product.price * p.quantity).toFixed(2)}</span>
+        </p>
+        <p className='flex justify-between *:font-medium'>
+          <span>Topic:</span> <span className='opacity-75'>{selectedCart.topic}</span>
+        </p>
+        <p className='flex justify-between *:font-medium'>
+          <span>Discount</span> <i className='opacity-75'>Comming soon!!!</i>
+        </p>
       </div>
     </Modal>
   );

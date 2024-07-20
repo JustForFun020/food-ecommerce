@@ -3,10 +3,13 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { Roles } from '../decorator/role.decorator';
+import { BaseGuard } from 'src/base.guard';
 
 @Injectable()
-export class UserRolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+export class UserRolesGuard extends BaseGuard implements CanActivate {
+  constructor(reflector: Reflector) {
+    super(reflector);
+  }
 
   canActivate(
     context: ExecutionContext,
@@ -16,6 +19,10 @@ export class UserRolesGuard implements CanActivate {
       ctx.getHandler(),
       ctx.getClass(),
     ]);
+
+    if (this.isPublic(ctx)) {
+      return true;
+    }
 
     const user = ctx.getContext().req.user;
     const { roles: userRoles } = user;

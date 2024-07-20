@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import React from 'react';
 
-const AdminProducts = dynamic(() => import('@/components/Admin/Products'), {
+const AdminProducts = dynamic(() => import('@/components/Admin/Product/Products'), {
   ssr: false,
 });
 

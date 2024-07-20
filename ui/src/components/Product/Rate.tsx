@@ -9,7 +9,7 @@ import { Rate as RateType } from '@/utils/types/rate';
 import { CREATE_RATE_MUTATION } from '@/lib/graphql/mutation';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import moment from 'moment';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 
 interface CommentProps {
   rating: number;
@@ -51,6 +51,14 @@ const Rate = ({ name }: { name: string }) => {
   const rates = _.get<RateType[]>(ratesData, 'getRateByProduct', []);
 
   const handleCreateComment = () => {
+    if (commentValue.comment === '') {
+      message.error('Please enter your comment');
+      return;
+    }
+    if (commentValue.rating === 0) {
+      message.error('Score must be greater than 0');
+      return;
+    }
     createComment({
       variables: {
         createRateDto: {
@@ -66,26 +74,36 @@ const Rate = ({ name }: { name: string }) => {
   const openCommentModal = () => {
     return (
       <Modal
-        title='Comment'
+        title={<div className='text-center text-2xl tracking-wide font-medium mb-4'>Create your comment!!!</div>}
         open={isModalVisible}
         onOk={() => {}}
         onCancel={() => setIsModalVisible(false)}
         footer={[
-          <Button key={'btn__comment'} icon={<CommentOutlined />} onClick={handleCreateComment}>
-            Comment
-          </Button>,
+          <div
+            className='text-center p-12 font-medium tracking-wide opacity-70 pt-4 border-t border-t-slate-300'
+            key={'footer-text'}
+          >
+            We are very grateful for your contribution to the dish🥰🥰{"(●'◡'●)"}🥰🥰
+          </div>,
         ]}
         maskClosable={true}
       >
-        <AntdRate
-          onChange={(value: number) => setCommentValue({ ...commentValue, rating: value })}
-          value={commentValue.rating}
-        />
-        <Input.TextArea
-          placeholder='Comment here...'
-          onChange={(e) => setCommentValue({ ...commentValue, comment: e.target.value })}
-          value={commentValue.comment}
-        />
+        <div className='*:mb-4 *:leading-8 mb-4'>
+          <AntdRate
+            onChange={(value: number) => setCommentValue({ ...commentValue, rating: value })}
+            value={commentValue.rating}
+          />
+          <Input.TextArea
+            placeholder='Comment here...'
+            onChange={(e) => setCommentValue({ ...commentValue, comment: e.target.value })}
+            value={commentValue.comment}
+          />
+        </div>
+        <div className='text-right mb-4'>
+          <Button key={'btn__comment'} icon={<CommentOutlined />} onClick={handleCreateComment} type='primary'>
+            Comment
+          </Button>
+        </div>
       </Modal>
     );
   };

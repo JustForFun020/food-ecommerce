@@ -8,9 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 import { Categories, Product, ProductImage } from '@/utils/types/product';
-import EditProduct from './Product/EditProduct';
+import EditProduct from './EditProduct';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
-import { getColumnSearchProps } from './SearchTableColumn';
+import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
 interface DataType {

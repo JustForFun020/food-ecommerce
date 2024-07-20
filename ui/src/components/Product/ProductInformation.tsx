@@ -10,7 +10,7 @@ import { GET_PRODUCT_BY_CATEGORY_QUERY, GET_PRODUCT_BY_NAME_QUERY } from '@/lib/
 import { Product as ProductType } from '@/utils/types/product';
 import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
-import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/_get-rate-product';
+import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 
 const ProductInformation = ({ name }: { name: string }) => {
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {
@@ -118,8 +118,8 @@ const ProductInformation = ({ name }: { name: string }) => {
             </li>
           </ul>
           <p className='text-lg mt-4 mb-4 opacity-70'>{product.description}</p>
-          <p className='text-lg'>Price: {product.price}$</p>
-          <p className='text-lg'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
+          <p className='text-lg mb-4'>Price: $ {product.price}</p>
+          <p className='text-lg mb-4'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
         </div>
         <Button className='absolute bottom-5 right-5' type='primary' onClick={() => addProductToCart()}>
           Add to cart
