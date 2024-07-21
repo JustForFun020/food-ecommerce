@@ -1,110 +1,82 @@
 'use client';
 
 import _ from 'lodash';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { CommentOutlined, UserOutlined } from '@ant-design/icons';
-import { useMutation, useQuery } from '@apollo/client';
-import { Button, Modal, Rate as AntdRate, Input, message, Avatar, Tooltip } from 'antd';
+import { useQuery } from '@apollo/client';
+import { Button, Rate as AntdRate, Avatar, Tooltip, Select } from 'antd';
 import { Rate as RateType } from '@/utils/types/rate';
-import { CREATE_RATE_MUTATION } from '@/lib/graphql/mutation';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import moment from 'moment';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
+import CreateComment from './CreateComment';
+import { ValueOfRate } from '@/utils/enum/rate';
 
-interface CommentProps {
-  rating: number;
-  comment: string;
-}
+const filterRateValue = [
+  {
+    label: '5 stars',
+    value: ValueOfRate.FIVE,
+  },
+  {
+    label: '4 stars',
+    value: ValueOfRate.FOUR,
+  },
+  {
+    label: '3 stars',
+    value: ValueOfRate.THREE,
+  },
+  {
+    label: '2 stars',
+    value: ValueOfRate.TWO,
+  },
+  {
+    label: '1 stars',
+    value: ValueOfRate.ONE,
+  },
+  {
+    label: 'All',
+    value: 0,
+  },
+];
 
 const Rate = ({ name }: { name: string }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [commentValue, setCommentValue] = useState<CommentProps>({ rating: 0, comment: '' } as CommentProps);
+  const [listRate, setListRate] = useState<RateType[]>([]);
+  const [currentFilterRate, setCurrentFilterRate] = useState(0);
+
   const { currentUser } = useAuththor();
 
   const { loading, data: ratesData } = useQuery(GET_RATE_PRODUCT, {
     variables: {
       productName: name,
     },
-  });
-  const [createComment, { loading: createCommentLoading, data: createCommentData }] = useMutation(
-    CREATE_RATE_MUTATION,
-    {
-      refetchQueries: [
-        {
-          query: GET_RATE_PRODUCT,
-          variables: {
-            productName: name,
-          },
-        },
-      ],
-      onCompleted: () => {
-        setIsModalVisible(false);
-        setCommentValue({ rating: 0, comment: '' });
-        message.success('Comment successfully');
-      },
-      onError: (error) => {
-        message.error(error.message);
-      },
+    onCompleted: (data) => {
+      const rates = _.get<RateType[]>(ratesData, 'getRateByProduct', []);
+      setListRate(rates);
     },
-  );
+  });
 
-  const rates = _.get<RateType[]>(ratesData, 'getRateByProduct', []);
-
-  const handleCreateComment = () => {
-    if (commentValue.comment === '') {
-      message.error('Please enter your comment');
-      return;
+  const handleFilterRate = (value: number) => {
+    const rates = _.get<RateType[]>(ratesData, 'getRateByProduct', []);
+    setCurrentFilterRate(value);
+    if (value === 0) {
+      setListRate(rates);
+    } else {
+      const listSearchRates = _.filter<RateType>(rates, (rate) => rate.score === value);
+      setListRate(listSearchRates);
     }
-    if (commentValue.rating === 0) {
-      message.error('Score must be greater than 0');
-      return;
-    }
-    createComment({
-      variables: {
-        createRateDto: {
-          score: commentValue.rating,
-          comment: commentValue.comment,
-          name: name,
-          uid: currentUser.id,
-        },
-      },
-    });
   };
 
   const openCommentModal = () => {
     return (
-      <Modal
-        title={<div className='text-center text-2xl tracking-wide font-medium mb-4'>Create your comment!!!</div>}
-        open={isModalVisible}
-        onOk={() => {}}
-        onCancel={() => setIsModalVisible(false)}
-        footer={[
-          <div
-            className='text-center p-12 font-medium tracking-wide opacity-70 pt-4 border-t border-t-slate-300'
-            key={'footer-text'}
-          >
-            We are very grateful for your contribution to the dish🥰🥰{"(●'◡'●)"}🥰🥰
-          </div>,
-        ]}
-        maskClosable={true}
-      >
-        <div className='*:mb-4 *:leading-8 mb-4'>
-          <AntdRate
-            onChange={(value: number) => setCommentValue({ ...commentValue, rating: value })}
-            value={commentValue.rating}
-          />
-          <Input.TextArea
-            placeholder='Comment here...'
-            onChange={(e) => setCommentValue({ ...commentValue, comment: e.target.value })}
-            value={commentValue.comment}
-          />
-        </div>
-        <div className='text-right mb-4'>
-          <Button key={'btn__comment'} icon={<CommentOutlined />} onClick={handleCreateComment} type='primary'>
-            Comment
-          </Button>
-        </div>
-      </Modal>
+      <CreateComment
+        isModalVisible={isModalVisible}
+        setIsModalVisible={setIsModalVisible}
+        currentUser={currentUser}
+        productName={name}
+        key={'create-comment'}
+        setListRate={setListRate}
+      />
     );
   };
 
@@ -113,7 +85,15 @@ const Rate = ({ name }: { name: string }) => {
   return (
     <div className='ml-8 mr-8'>
       <div className='flex justify-between mb-6'>
-        <h1 className='text-3xl font-medium tracking-wide'>Customer Rating</h1>
+        <div className='flex items-center gap-3'>
+          <h1 className='text-3xl font-medium tracking-wide'>Customer Rating</h1>
+          <Select
+            options={filterRateValue}
+            className='w-[200px]'
+            onSelect={(e) => handleFilterRate(e)}
+            value={currentFilterRate}
+          />
+        </div>
         <div className='text-center'>
           <Button onClick={() => setIsModalVisible(true)} type='primary' icon={<CommentOutlined />}>
             Comment
@@ -123,10 +103,10 @@ const Rate = ({ name }: { name: string }) => {
       <div className='pr-12 pl-12 mr-12 max-h-[800px] overflow-auto'>
         <div>
           <div className='p-6'>
-            {rates.length === 0 ? (
+            {listRate.length === 0 ? (
               <p className='flex items-center justify-center h-full text-xl font-medium opacity-80'>No ratings yet</p>
             ) : (
-              rates.map((rating, index) => (
+              _.map(listRate, (rating, index) => (
                 <div key={rating.id} className='flex items-center mb-6 p-6 shadow-md overflow-auto h-full'>
                   <Avatar size={64} icon={<UserOutlined />} />
                   <div>

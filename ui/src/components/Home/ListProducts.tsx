@@ -33,8 +33,8 @@ const ListProducts = () => {
       <Carousel className='flex p-6' autoplay>
         {_.map(Array.from([0, 1]), (number) => {
           return (
-            <div className=''>
-              <div className='flex w-full items-center justify-between' key={number}>
+            <div className='' key={number}>
+              <div className='flex w-full items-center justify-between'>
                 {_.map(_.slice(listProduct, 5 * number, 5 * number + 5), (product, index) => {
                   return (
                     <Card
