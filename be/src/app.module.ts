@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
-import { GqlAuthGuard } from './auth/guard/gql-auth.guard';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { CategoriesModule } from './categories/categories.module';
-import { ProductModule } from './product/product.module';
-import { CartModule } from './cart/cart.module';
-import { RateModule } from './rate/rate.module';
-import { StaticModule } from './serve-static/serve-static.module';
-import { UserModule } from './user/user.module';
-import { InvoiceModule } from './invoice/invoice.module';
+
+import { DatabaseModule } from './database/database.module';
+import { GqlAuthGuard } from './common/guard/gql-auth.guard';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { ProductModule } from './modules/product/product.module';
+import { CartModule } from './modules/cart/cart.module';
+import { RateModule } from './modules/rate/rate.module';
+import { StaticModule } from './modules/serve-static/serve-static.module';
+import { UserModule } from './modules/user/user.module';
+import { InvoiceModule } from './modules/invoice/invoice.module';
 
 @Module({
   imports: [
