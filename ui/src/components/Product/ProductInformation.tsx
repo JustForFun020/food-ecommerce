@@ -11,6 +11,7 @@ import { Product as ProductType } from '@/utils/types/product';
 import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
+import { productTagColor } from '@/utils/constance/color';
 
 const ProductInformation = ({ name }: { name: string }) => {
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {
@@ -101,21 +102,22 @@ const ProductInformation = ({ name }: { name: string }) => {
 
   return (
     <div className='pt-6 pb-6 pr-8 pl-8'>
-      <div className='flex mb-8 relative p-4'>
-        <div className='mr-6 w-1/2'>
-          <Image className='w-full' src={product.images[0].imageUrl} alt={product.name} width={500} height={500} />
+      <div className='flex mb-8 relative p-4 gap-10'>
+        <div className='mr-6 w-1/3'>
+          <Image className='w-full' src={product?.images[0].imageUrl} alt={product.name} width={500} height={500} />
         </div>
-        <div className='leading-8 w-1/2'>
-          <Badge.Ribbon text='taste' placement='start' color='yellow'>
-            <p className=' ml-12 text-4xl tracking-wide font-bold'>{product.name}</p>
-          </Badge.Ribbon>
+        <div className='leading-8 w-2/3'>
+          <div className='w-2/3'>
+            <Badge.Ribbon text={product.categories.name} placement='end' color='yellow'>
+              <span className='text-4xl tracking-wide font-bold mr-12'>{product.name}</span>
+            </Badge.Ribbon>
+          </div>
           <ul className='flex mt-4'>
-            <li>
-              <Tag color='blue'>Category</Tag>
-            </li>
-            <li>
-              <Tag color='red'>category</Tag>
-            </li>
+            {_.map(product.tags, (tag) => (
+              <li key={tag.id} className='mr-4'>
+                <Tag color={productTagColor[tag.name]}>{tag.name}</Tag>
+              </li>
+            ))}
           </ul>
           <p className='text-lg mt-4 mb-4 opacity-70'>{product.description}</p>
           <p className='text-lg mb-4'>Price: $ {product.price}</p>

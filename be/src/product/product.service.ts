@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UploadImageDto } from './dto/upload-image.dto';
 import { Categories } from 'src/categories/entity/categories.entity';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductTag } from './entity/product-tag.entity';
 
 @Injectable()
 export class ProductService {
@@ -21,6 +22,8 @@ export class ProductService {
     private readonly productImageRepository: Repository<ProductImage>,
     @InjectRepository(Categories)
     private readonly categoriesRepository: Repository<Categories>,
+    @InjectRepository(ProductTag)
+    private readonly productTagRepository: Repository<ProductTag>,
     private readonly entityManager: EntityManager,
   ) {}
 
@@ -28,7 +31,7 @@ export class ProductService {
     createProduct: CreateProductDto,
     uploadImage: UploadImageDto,
   ): Promise<Product> {
-    const { name, categories } = createProduct;
+    const { name, categories, tags: tagsDto } = createProduct;
     const alreadyExistsProduct = await this.productRepository.findOne({
       where: { name },
     });
@@ -37,6 +40,14 @@ export class ProductService {
     const alreadyExistsCategory = await this.categoriesRepository.findOne({
       where: { name: categoriesName },
     });
+
+    const tags = await Promise.all(
+      tagsDto.map(async (tag) => {
+        return await this.productTagRepository.findOne({
+          where: { name: tag },
+        });
+      }),
+    );
 
     if (!alreadyExistsCategory) {
       const category = this.categoriesRepository.create(categories);
@@ -53,7 +64,10 @@ export class ProductService {
     const file = await uploadImage.image;
     const imagePath = await this.uploadProductImage(file);
 
-    const product = this.productRepository.create(createProduct);
+    const product = this.productRepository.create({
+      ...createProduct,
+      tags,
+    });
     const productImage = this.productImageRepository.create({
       image: imagePath,
       product,
@@ -90,14 +104,14 @@ export class ProductService {
   async getProductByName(name: string): Promise<Product> {
     const products = await this.productRepository.findOne({
       where: { name },
-      relations: ['images', 'categories'],
+      relations: ['images', 'categories', 'tags', 'rates', 'rates.user'],
     });
     return products;
   }
 
   async getAllProducts(pagination: number, limit: number) {
     const allProduct = await this.productRepository.find({
-      relations: ['images', 'categories'],
+      relations: ['images', 'categories', 'tags'],
       take: limit,
       skip: (pagination - 1) * limit,
     });
@@ -112,7 +126,7 @@ export class ProductService {
   async getProductById(id: number) {
     const product = await this.productRepository.findOne({
       where: { id },
-      relations: ['images', 'categories'],
+      relations: ['images', 'categories', 'tags'],
     });
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
@@ -123,17 +137,28 @@ export class ProductService {
   async getProductByCategory(category: string) {
     const products = await this.productRepository.find({
       where: { categories: { name: category } },
-      relations: ['images', 'categories'],
+      relations: ['images', 'categories', 'tags'],
     });
     return products;
   }
 
   async updateProduct(updateProduct: UpdateProductDto) {
-    const { id } = updateProduct;
+    const { id, tags } = updateProduct;
 
     const product = await this.productRepository.findOne({
       where: { id },
+      relations: ['tags'],
     });
+    let tagsEntity: ProductTag[] = [];
+    if (tags) {
+      tagsEntity = await Promise.all(
+        tags.map(async (tag) => {
+          return await this.productTagRepository.findOne({
+            where: { name: tag },
+          });
+        }),
+      );
+    }
 
     if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
@@ -141,15 +166,16 @@ export class ProductService {
     const { name, description, price } = updateProduct;
     try {
       await this.productRepository.update(id, {
-        ...product,
         name,
         description,
         price,
       });
+      product.tags = tagsEntity;
+      await this.productRepository.save(product);
 
       return this.productRepository.findOne({
         where: { id },
-        relations: ['images', 'categories'],
+        relations: ['images', 'categories', 'tags'],
       });
     } catch (error) {
       console.log(error);

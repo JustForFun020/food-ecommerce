@@ -9,8 +9,82 @@ import type { UploadChangeParam } from 'antd/es/upload';
 import { useMutation } from '@apollo/client';
 import { CREATE_PRODUCT_MUTATION } from '@/lib/graphql/mutation';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
+import { NameOfProductTag } from '@/utils/enum/product';
+
+const categories = [
+  {
+    label: 'Vegetables',
+    value: 'Vegetables',
+  },
+  {
+    label: 'Fruits',
+    value: 'Fruits',
+  },
+  {
+    label: 'Fast Food',
+    value: 'Fast Food',
+  },
+  {
+    label: 'Meat',
+    value: 'Meat',
+  },
+  {
+    label: 'Seafood',
+    value: 'Seafood',
+  },
+  {
+    label: 'Beverages',
+    value: 'Beverages',
+  },
+];
+
+const tags = [
+  {
+    label: NameOfProductTag.BEST_SELLER,
+    value: NameOfProductTag.BEST_SELLER,
+  },
+  {
+    label: NameOfProductTag.FEATURED,
+    value: NameOfProductTag.FEATURED,
+  },
+  {
+    label: NameOfProductTag.FRESH,
+    value: NameOfProductTag.FRESH,
+  },
+  {
+    label: NameOfProductTag.HOT,
+    value: NameOfProductTag.HOT,
+  },
+  {
+    label: NameOfProductTag.LIMITED,
+    value: NameOfProductTag.LIMITED,
+  },
+  {
+    label: NameOfProductTag.NEW,
+    value: NameOfProductTag.NEW,
+  },
+  {
+    label: NameOfProductTag.SALE,
+    value: NameOfProductTag.SALE,
+  },
+  {
+    label: NameOfProductTag.SPECIAL,
+    value: NameOfProductTag.SPECIAL,
+  },
+  {
+    label: NameOfProductTag.TOP_RATED,
+    value: NameOfProductTag.TOP_RATED,
+  },
+  {
+    label: NameOfProductTag.TRENDING,
+    value: NameOfProductTag.TRENDING,
+  },
+];
 
 interface ProductCategories {
+  name: string;
+}
+interface ProductTags {
   name: string;
 }
 
@@ -18,6 +92,7 @@ const AdminAddProduct = () => {
   const [product, setProduct] = useState<Product>({} as Product);
   const [productImage, setProductImage] = useState<any>(null);
   const [productCategories, setProductCategories] = useState<ProductCategories[]>([] as ProductCategories[]);
+  const [productTags, setProductTags] = useState<ProductTags[]>([] as ProductTags[]);
 
   const [form] = Form.useForm();
 
@@ -26,6 +101,7 @@ const AdminAddProduct = () => {
       form.resetFields();
       setProductImage(null);
       setProductCategories([]);
+      setProductTags([]);
       setProduct({} as Product);
       message.success('Product added successfully');
     },
@@ -34,33 +110,6 @@ const AdminAddProduct = () => {
     },
     refetchQueries: [{ query: GET_ALL_PRODUCTS_QUERY, variables: { page: 1, limit: 10000 } }],
   });
-
-  const categories = [
-    {
-      label: 'Vegetables',
-      value: 'Vegetables',
-    },
-    {
-      label: 'Fruits',
-      value: 'Fruits',
-    },
-    {
-      label: 'Fast Food',
-      value: 'Fast Food',
-    },
-    {
-      label: 'Meat',
-      value: 'Meat',
-    },
-    {
-      label: 'Seafood',
-      value: 'Seafood',
-    },
-    {
-      label: 'Beverages',
-      value: 'Beverages',
-    },
-  ];
 
   const onFormSubmit = () => {
     createProduct({
@@ -71,6 +120,7 @@ const AdminAddProduct = () => {
           description: product.description,
           categories: productCategories[0],
           amount: Number(product.amount),
+          tags: productTags.map((tag) => tag.name),
         },
         uploadImage: {
           image: productImage,
@@ -170,6 +220,15 @@ const AdminAddProduct = () => {
               setProductCategories([...productCategories, { name: value }]);
             }}
             value={productCategories[0]?.name}
+          />
+        </Form.Item>
+        <Form.Item label='Tags' name={'tags'}>
+          <Select
+            options={tags}
+            mode='tags'
+            onSelect={(value) => {
+              setProductTags([...productTags, { name: value }]);
+            }}
           />
         </Form.Item>
         <Form.Item>

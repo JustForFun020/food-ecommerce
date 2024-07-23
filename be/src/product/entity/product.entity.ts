@@ -1,6 +1,13 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { AbstractEntity } from 'src/database/abstract.entity';
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ProductImage } from './product-image.entity';
 import { Categories } from 'src/categories/entity/categories.entity';
 import { Rate } from 'src/rate/entity/rate.entity';
@@ -45,8 +52,12 @@ export class Product extends AbstractEntity<Product> {
   @Field(() => [CartProducts])
   cartProducts: CartProducts[];
 
-  @ManyToMany(() => ProductTag, (ptag) => ptag.products)
+  @ManyToMany(() => ProductTag, (ptag) => ptag.products, {
+    cascade: true,
+    eager: true,
+  })
   @Field(() => [ProductTag])
+  @JoinTable({ name: 'product_tag' })
   tags: ProductTag[];
 
   @ManyToMany(() => Invoice, (invoice) => invoice.products)

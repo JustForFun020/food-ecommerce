@@ -1,10 +1,11 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { Button, Drawer, Form, Image, Input, message } from 'antd';
-import { Product } from '@/utils/types/product';
-import { useAppSelector } from '@/lib/hook/useAppSelector';
+import { Button, Drawer, Form, Image, Input, message, Select } from 'antd';
+import { Product, ProductTag } from '@/utils/types/product';
 import { useMutation } from '@apollo/client';
 import { UPDATE_PRODUCT_MUTATION } from '@/lib/graphql/mutation';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
+import { tagsOptions } from '@/utils/constance/tagsOption';
 
 interface EditProductProps {
   isVisitableDrawer: boolean;
@@ -16,6 +17,9 @@ interface EditProductValue {
   name: string;
   price: number;
   description: string;
+  tags: {
+    name: string;
+  }[];
 }
 
 const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditProductProps) => {
@@ -24,9 +28,12 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
     name: '',
     price: 0,
     description: '',
+    tags: [],
   } as EditProductValue);
 
-  const [updateProduct] = useMutation(UPDATE_PRODUCT_MUTATION, {
+  const [form] = Form.useForm();
+
+  const [updateProduct, { loading }] = useMutation(UPDATE_PRODUCT_MUTATION, {
     onCompleted: () => {
       setIsVisitableDrawer(false);
       form.resetFields();
@@ -39,20 +46,23 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
         query: GET_ALL_PRODUCTS_QUERY,
         variables: {
           page: 1,
-          limit: 10,
+          limit: 10000,
         },
       },
     ],
   });
 
-  const [form] = Form.useForm();
-
   useEffect(() => {
     const defaultValue = {
       name: product?.name ?? '',
       price: product?.price ?? '',
+      tags: product?.tags ?? [],
+      description: product?.description ?? '',
     };
-    form.setFieldsValue(defaultValue);
+    form.setFieldsValue({
+      ...defaultValue,
+      tags: _.map(product?.tags, (tag) => tag.name),
+    });
     setEditProductValue({
       ...defaultValue,
       description: product?.description ?? '',
@@ -64,6 +74,17 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
     setEditProductValue({ ...editProductValue, [name]: value });
   };
 
+  const handleSelectedTags = (value: string) => {
+    setEditProductValue({ ...editProductValue, tags: [{ name: value }, ...editProductValue.tags] });
+  };
+
+  const handleDeselectedTags = (value: string) => {
+    setEditProductValue({
+      ...editProductValue,
+      tags: _.filter(editProductValue.tags, (tag) => tag.name !== value),
+    });
+  };
+
   const handleUpdateProduct = () => {
     updateProduct({
       variables: {
@@ -72,10 +93,12 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
           name: editProductValue.name,
           description: productDescription,
           price: Number(editProductValue.price),
+          tags: editProductValue.tags.map((tag) => tag.name),
         },
       },
     });
   };
+
   return (
     <Drawer
       title={`Product: ${product?.name}`}
@@ -92,7 +115,7 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
         <Button className='mr-6' key={'delete'} danger>
           Delete
         </Button>,
-        <Button key={'update'} type='primary' htmlType='submit' onClick={handleUpdateProduct}>
+        <Button key={'update'} type='primary' htmlType='submit' onClick={handleUpdateProduct} loading={loading}>
           Update
         </Button>,
       ]}
@@ -107,20 +130,21 @@ const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditP
         />
         <div className='ml-8 w-2/3'>
           <h1 className='text-2xl font-medium opacity-80 mb-2'>Common Information</h1>
-          <Form
-            form={form}
-            initialValues={{
-              name: product?.name ?? '',
-              price: product?.price ?? '',
-            }}
-            labelAlign='left'
-            labelCol={{ span: 6 }}
-          >
+          <Form form={form} labelAlign='left' labelCol={{ span: 6 }}>
             <Form.Item label='Name' name={'name'}>
               <Input name='name' onChange={onInputChange} />
             </Form.Item>
             <Form.Item label='Price' name={'price'}>
               <Input name='price' onChange={onInputChange} />
+            </Form.Item>
+            <Form.Item name={'tags'} label='Tags'>
+              <Select
+                options={tagsOptions}
+                placeholder='Select tags'
+                mode='tags'
+                onSelect={(value) => handleSelectedTags(value)}
+                onDeselect={(value) => handleDeselectedTags(value)}
+              />
             </Form.Item>
           </Form>
         </div>

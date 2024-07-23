@@ -18,4 +18,7 @@ export class UpdateProductDto {
   @Field()
   @IsNumber()
   price: number;
+
+  @Field(() => [String])
+  tags: string[];
 }

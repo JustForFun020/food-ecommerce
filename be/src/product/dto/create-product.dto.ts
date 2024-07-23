@@ -28,4 +28,8 @@ export class CreateProductDto {
   @Field(() => UploadImageDto, { nullable: true })
   @IsOptional()
   image: UploadImageDto;
+
+  @Field(() => [String], { nullable: true })
+  @IsOptional()
+  tags: string[];
 }

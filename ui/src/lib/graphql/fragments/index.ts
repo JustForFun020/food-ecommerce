@@ -43,6 +43,10 @@ export const PRODUCT_FIELD = gql`
         username
       }
     }
+    tags {
+      name
+      description
+    }
   }
 `;
 

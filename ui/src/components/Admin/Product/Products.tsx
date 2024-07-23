@@ -2,16 +2,18 @@
 
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Image, message, Table } from 'antd';
+import { Button, Image, message, Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
-import { Categories, Product, ProductImage } from '@/utils/types/product';
+import { Categories, Product, ProductImage, ProductTag } from '@/utils/types/product';
 import EditProduct from './EditProduct';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
 import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
+import { productTagColor } from '@/utils/constance/color';
+import { NameOfProductTag } from '@/utils/enum/product';
 
 interface DataType {
   id: string;
@@ -19,6 +21,7 @@ interface DataType {
   price: number;
   category: Categories;
   image: ProductImage[];
+  tags: ProductTag[];
 }
 
 const categories = [
@@ -48,6 +51,53 @@ const categories = [
   },
 ];
 
+const filterTags = [
+  {
+    text: NameOfProductTag.BEST_SELLER,
+    value: NameOfProductTag.BEST_SELLER,
+  },
+  {
+    text: NameOfProductTag.NEW,
+    value: NameOfProductTag.NEW,
+  },
+  {
+    text: NameOfProductTag.FEATURED,
+    value: NameOfProductTag.FEATURED,
+  },
+  {
+    text: NameOfProductTag.TOP_RATED,
+    value: NameOfProductTag.TOP_RATED,
+  },
+  {
+    text: NameOfProductTag.HOT,
+    value: NameOfProductTag.HOT,
+  },
+  {
+    text: NameOfProductTag.SALE,
+    value: NameOfProductTag.SALE,
+  },
+  {
+    text: NameOfProductTag.FRESH,
+    value: NameOfProductTag.FRESH,
+  },
+  {
+    text: NameOfProductTag.LIMITED,
+    value: NameOfProductTag.LIMITED,
+  },
+  {
+    text: NameOfProductTag.SPECIAL,
+    value: NameOfProductTag.SPECIAL,
+  },
+  {
+    text: NameOfProductTag.TOP_RATED,
+    value: NameOfProductTag.TOP_RATED,
+  },
+  {
+    text: NameOfProductTag.TRENDING,
+    value: NameOfProductTag.TRENDING,
+  },
+];
+
 const AdminProducts = () => {
   const [isVisitableDrawer, setIsVisitableDrawer] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -57,7 +107,7 @@ const AdminProducts = () => {
   const { refreshData } = useRefreshTable(GET_ALL_PRODUCTS_QUERY, {
     variables: {
       page: 1,
-      limit: 10000,
+      limit: 1000,
     },
   });
 
@@ -69,7 +119,7 @@ const AdminProducts = () => {
     },
     variables: {
       page: 1,
-      limit: 10000,
+      limit: 1550000,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -82,6 +132,7 @@ const AdminProducts = () => {
       price: product.price,
       category: product.categories,
       images: product.images,
+      tags: product.tags,
     };
   });
 
@@ -100,12 +151,47 @@ const AdminProducts = () => {
         searchText,
         searchedColumn,
       }),
+      width: '30%',
     },
     {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
       sorter: (a: DataType, b: DataType) => a.price - b.price,
+      render: (price: number) => {
+        return <div>$ {price}</div>;
+      },
+    },
+    {
+      title: 'Tags',
+      dataIndex: 'tags',
+      key: 'tags',
+      render: (tags: ProductTag[]) => {
+        return (
+          <div>
+            {!_.isEmpty(tags) ? (
+              <div className='*:mb-3'>
+                {_.map(tags, (tag) => {
+                  return (
+                    <Tag key={tag.id} color={productTagColor[tag.name]}>
+                      {tag.name}
+                    </Tag>
+                  );
+                })}
+              </div>
+            ) : (
+              <Tag color='default'>No Tags</Tag>
+            )}
+          </div>
+        );
+      },
+      filters: filterTags,
+      onFilter: (value, record) => {
+        console.log('record', record);
+        console.log('value', value);
+        return record.tags.some((tag: ProductTag) => tag.name === value);
+      },
+      width: '20%',
     },
     {
       title: 'Category',

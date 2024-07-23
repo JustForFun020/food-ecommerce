@@ -4,7 +4,7 @@ import { Column, Entity, ManyToMany } from 'typeorm';
 import { Product } from './product.entity';
 
 @Entity({
-  name: 'ptag',
+  name: 'tag',
 })
 @ObjectType()
 export class ProductTag extends AbstractEntity<ProductTag> {

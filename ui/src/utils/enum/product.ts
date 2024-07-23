@@ -1,0 +1,12 @@
+export enum NameOfProductTag {
+  NEW = 'NEW',
+  SALE = 'SALE',
+  HOT = 'HOT',
+  BEST_SELLER = 'BEST SELLER',
+  TRENDING = 'TRENDING',
+  LIMITED = 'LIMITED',
+  FEATURED = 'FEATURED',
+  SPECIAL = 'SPECIAL',
+  TOP_RATED = 'TOP RATED',
+  FRESH = 'FRESH',
+}
