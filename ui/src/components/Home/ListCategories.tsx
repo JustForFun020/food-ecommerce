@@ -10,7 +10,7 @@ import { useQuery } from '@apollo/client';
 import { GET_ALL_CATEGORIES_QUERY } from '@/lib/graphql/query';
 import { Categories } from '@/utils/types/product';
 
-const ListCategories = () => {
+const ListCategories: React.FC = () => {
   const router = useRouter();
 
   const { loading, data } = useQuery(GET_ALL_CATEGORIES_QUERY);

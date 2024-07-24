@@ -16,15 +16,13 @@ interface EditCartProps extends PropsFromRedux {
   setIsVisitableEditCart: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditCart = (props: EditCartProps) => {
+const EditCart: React.FC<EditCartProps> = ({ selectedCart, isVisitableEditCart, setIsVisitableEditCart }) => {
   const [productSelected, setProductSelected] = useState<CartProducts[]>([] as CartProducts[]);
   const [defaultCartInfo, setDefaultCartInfo] = useState({
     name: '',
     topic: '',
     description: '',
   });
-
-  const { selectedCart, isVisitableEditCart, setIsVisitableEditCart } = props;
 
   useEffect(() => {
     setDefaultCartInfo({

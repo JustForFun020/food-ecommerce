@@ -7,7 +7,7 @@ import Rate from './Rate';
 const ListProducts = dynamic(() => import('./ListProducts'), { ssr: false });
 const ListCategories = dynamic(() => import('./ListCategories'), { ssr: false });
 
-const Content = () => {
+const Content: React.FC = () => {
   return (
     <div className='content__container'>
       <div className='content__container_primary flex items-center justify-center flex-col'>

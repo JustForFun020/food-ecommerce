@@ -10,9 +10,7 @@ interface ProductTooltipProps {
   children: React.ReactNode;
 }
 
-const ProductTooltip = (props: ProductTooltipProps) => {
-  const { product, children } = props;
-
+const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) => {
   const { addProductToCart } = useAddProductToCart(undefined, product.id, 1, {
     handleCompleted(res) {
       message.success('Add product to cart successfully');

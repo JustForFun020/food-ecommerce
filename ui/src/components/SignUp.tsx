@@ -6,8 +6,9 @@ import '@/style/auth.css';
 import Link from 'next/link';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_MUTATION } from '@/lib/graphql/mutation';
-import { useRouter } from 'next/navigation';
 import _ from 'lodash';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
+import { confirmPasswordRules, emailRules, passwordRules, usernameRules } from '@/utils/formValidate';
 
 interface SignUpProps {
   username: string;
@@ -17,9 +18,9 @@ interface SignUpProps {
 
 const SignUp = () => {
   const [signUpDto, setSignUpDto] = useState<SignUpProps>({} as SignUpProps);
+  const { navigateTo } = useCustomRouter();
 
   const [form] = Form.useForm();
-  const router = useRouter();
 
   const [signup, { loading: signUpLoading, error: signUpError }] = useMutation(SIGNUP_MUTATION, {
     onError: (error) => {
@@ -29,7 +30,7 @@ const SignUp = () => {
       const res = _.get(data, 'signup', {});
       localStorage.setItem('token', res.token);
       localStorage.setItem('username', signUpDto.username);
-      router.push('/');
+      navigateTo('/');
       form.resetFields();
     },
   });
@@ -61,68 +62,16 @@ const SignUp = () => {
         labelCol={{ span: 8 }}
         onFinish={onFinish}
       >
-        <Form.Item
-          label='Username'
-          name='username'
-          rules={[
-            {
-              required: true,
-              message: 'Please input your username!',
-            },
-          ]}
-        >
+        <Form.Item label='Username' name='username' rules={usernameRules}>
           <Input onChange={onInputChange} name='username' />
         </Form.Item>
-        <Form.Item
-          label='Email'
-          name='email'
-          rules={[
-            {
-              required: true,
-              message: 'Please input your email!',
-            },
-            {
-              type: 'email',
-              message: 'Please input a valid email!',
-            },
-          ]}
-        >
+        <Form.Item label='Email' name='email' rules={emailRules}>
           <Input onChange={onInputChange} name='email' />
         </Form.Item>
-        <Form.Item
-          label='Password'
-          name='password'
-          rules={[
-            {
-              required: true,
-              message: 'Please input your password!',
-            },
-            {
-              min: 8,
-              message: 'Password must be at least 8 characters',
-            },
-          ]}
-        >
+        <Form.Item label='Password' name='password' rules={passwordRules}>
           <Input.Password onChange={onInputChange} name='password' />
         </Form.Item>
-        <Form.Item
-          label='Confirm Password'
-          name='confirmPassword'
-          rules={[
-            {
-              required: true,
-              message: 'Please input your confirm password!',
-            },
-            {
-              validator: (rule, value) => {
-                if (!value || form.getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject('The confirm passwords do not match!');
-              },
-            },
-          ]}
-        >
+        <Form.Item label='Confirm Password' name='confirmPassword' rules={confirmPasswordRules(form)}>
           <Input.Password />
         </Form.Item>
         <Form.Item>

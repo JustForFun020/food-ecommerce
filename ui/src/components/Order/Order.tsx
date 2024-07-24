@@ -67,16 +67,6 @@ const Order = () => {
     });
   };
 
-  const renderDrawerEditCart = () => {
-    return (
-      <EditCart
-        isVisitableEditCart={isVisitableEditCart}
-        setIsVisitableEditCart={setIsVisitableEditCart}
-        selectedCart={selectedCart}
-      />
-    );
-  };
-
   const renderEmptyCartLayout = () => {
     return (
       <div className='flex flex-col items-center justify-center'>
@@ -89,16 +79,6 @@ const Order = () => {
           Start shopping
         </Link>
       </div>
-    );
-  };
-
-  const renderModelCheckout = () => {
-    return (
-      <Checkout
-        selectedCart={selectedCart}
-        isVisitableCheckout={isVisitableCheckout}
-        setIsVisitableCheckout={setIsVisitableCheckout}
-      />
     );
   };
 
@@ -195,8 +175,16 @@ const Order = () => {
           </Fragment>
         )}
       </div>
-      {renderDrawerEditCart()}
-      {renderModelCheckout()}
+      <EditCart
+        isVisitableEditCart={isVisitableEditCart}
+        setIsVisitableEditCart={setIsVisitableEditCart}
+        selectedCart={selectedCart}
+      />
+      <Checkout
+        selectedCart={selectedCart}
+        isVisitableCheckout={isVisitableCheckout}
+        setIsVisitableCheckout={setIsVisitableCheckout}
+      />
     </main>
   );
 };

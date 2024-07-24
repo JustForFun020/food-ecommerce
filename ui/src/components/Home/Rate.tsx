@@ -6,7 +6,7 @@ import React from 'react';
 import { testimonials } from '../../../__mocks__/testtimonial';
 import { UserOutlined } from '@ant-design/icons';
 
-const Rate = () => {
+const Rate: React.FC = () => {
   return (
     <div className='p-6 bg-slate-700'>
       <h1 className='text-5xl font-bold opacity-85 tracking-wide mb-4'>Customer Testimonials</h1>

@@ -14,11 +14,11 @@ interface UpdateInvoiceProps {
   setIsVisitableDrawerUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UpdateInvoice = ({
+const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
   selectedInvoice,
   setIsVisitableDrawerUpdate,
   isVisitableDrawerUpdate,
-}: UpdateInvoiceProps) => {
+}) => {
   const { products, status, createdAt } = selectedInvoice;
   const tagColor = status === 'Pending' ? 'orange' : 'green';
 

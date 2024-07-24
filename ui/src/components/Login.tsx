@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import { Button, ConfigProvider, Form, Input, notification } from 'antd';
 import Link from 'next/link';
-import { useMutation } from '@apollo/client';
+import { FetchResult, useMutation } from '@apollo/client';
 import { LOGIN_MUTATION } from '@/lib/graphql/mutation';
 import '@/style/auth.css';
-import { useRouter } from 'next/navigation';
 import { jwtDecode } from 'jwt-decode';
 import { useAppDispatch } from '@/lib/hook/useAppDispatch';
 import { getLoginInfo } from '@/lib/redux/user/reducer';
+import { usernameRules } from '@/utils/formValidate';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
 interface LoginProps {
   username: string;
@@ -19,13 +20,24 @@ interface LoginProps {
 const Login = () => {
   const [loginValue, setLoginValue] = useState<LoginProps>({} as LoginProps);
 
-  const router = useRouter();
+  const { navigateTo } = useCustomRouter();
   const dispatch = useAppDispatch();
 
   const [login, { loading: formLoading, data, error }] = useMutation(LOGIN_MUTATION);
 
   const [api, contextHolder] = notification.useNotification();
   const [form] = Form.useForm();
+
+  const handleLoginSuccess = (res: FetchResult<any>) => {
+    localStorage.setItem('token', res.data.login.token);
+    const decoded: any = jwtDecode(res.data.login.token);
+    if (decoded.role[0].roleId === 1) {
+      navigateTo('/admin');
+    } else {
+      navigateTo('/');
+    }
+    form.resetFields();
+  };
 
   const onFinish = (values: LoginProps) => {
     dispatch(getLoginInfo({ username: values.username }));
@@ -35,14 +47,7 @@ const Login = () => {
       },
     })
       .then((res) => {
-        localStorage.setItem('token', res.data.login.token);
-        const decoded: any = jwtDecode(res.data.login.token);
-        if (decoded.role[0].roleId === 1) {
-          router.push('/admin');
-        } else {
-          router.push('/');
-        }
-        form.resetFields();
+        handleLoginSuccess(res);
       })
       .catch((error) => {
         openErrorNotification(error.message);
@@ -85,16 +90,7 @@ const Login = () => {
           labelAlign='left'
           className='z-50 bg-slate-100 p-10 min-h-[350px] min-w-[450px] rounded-xl'
         >
-          <Form.Item
-            name='username'
-            rules={[
-              {
-                required: true,
-                message: 'Please input your username!',
-              },
-            ]}
-            label='Username'
-          >
+          <Form.Item name='username' rules={usernameRules} label='Username'>
             <Input type='text' placeholder='Username' name='username' onChange={onInputChange} />
           </Form.Item>
           <Form.Item

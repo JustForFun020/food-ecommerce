@@ -7,9 +7,10 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 import { Product } from '@/utils/types/product';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
-const ListProducts = () => {
-  const router = useRouter();
+const ListProducts: React.FC = () => {
+  const { navigateTo } = useCustomRouter();
 
   const { loading, data } = useQuery(GET_ALL_PRODUCTS_QUERY, {
     variables: {
@@ -20,7 +21,7 @@ const ListProducts = () => {
   const listProduct: Product[] = _.slice(_.get(data, 'getAllProduct.data', []), 0, 10);
 
   const handleClickProduct = (name: string) => {
-    router.push(`/product/${name}`);
+    navigateTo(`/product/${name}`);
   };
 
   if (loading) {

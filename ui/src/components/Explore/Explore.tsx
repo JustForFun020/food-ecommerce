@@ -12,14 +12,15 @@ import { GET_ALL_PRODUCTS_QUERY, GET_PRODUCT_BY_CATEGORY_QUERY } from '@/lib/gra
 import { Product } from '@/utils/types/product';
 import { NameOfCategories } from '@/utils/enum/categories';
 import ProductTooltip from './ProductTooltip';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
-const Explore = () => {
+const Explore: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [listProducts, setListProducts] = useState<Product[]>([]);
   const [isFiltering, setIsFiltering] = useState(false);
   const [categorySelected, setCategorySelected] = useState<string>('');
 
-  const router = useRouter();
+  const { navigateTo } = useCustomRouter();
 
   const productsPerPage = 10;
   const [getProduct, { loading, data }] = useLazyQuery(GET_ALL_PRODUCTS_QUERY, {
@@ -125,7 +126,7 @@ const Explore = () => {
                       }
                       className='w-[200px] shadow-sm'
                       hoverable
-                      onClick={() => router.push(`/product/${product.name}`)}
+                      onClick={() => navigateTo(`/product/${product.name}`)}
                     >
                       <Card.Meta title={product.name} description={<span>Price: $ {product.price}</span>} />
                     </Card>

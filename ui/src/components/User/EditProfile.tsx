@@ -1,9 +1,10 @@
+import React from 'react';
+import { Drawer, Form, Input, message } from 'antd';
+import { useMutation } from '@apollo/client';
 import { UPDATE_USER_MUTATION } from '@/lib/graphql/mutation';
 import { GET_USER_BY_USERNAME_QUERY } from '@/lib/graphql/query';
 import { User } from '@/utils/types/user';
-import { useMutation } from '@apollo/client';
-import { Drawer, Form, Input, message } from 'antd';
-import React from 'react';
+import { emailRules, phoneRules } from '@/utils/formValidate';
 
 interface EditProfileProps {
   user: User;
@@ -11,7 +12,7 @@ interface EditProfileProps {
   setIsVisitableEditProfile: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditProfile = ({ user, isVisitableEditProfile, setIsVisitableEditProfile }: EditProfileProps) => {
+const EditProfile: React.FC<EditProfileProps> = ({ user, isVisitableEditProfile, setIsVisitableEditProfile }) => {
   const [form] = Form.useForm();
 
   const [updateUser, { loading }] = useMutation(UPDATE_USER_MUTATION, {
@@ -38,11 +39,7 @@ const EditProfile = ({ user, isVisitableEditProfile, setIsVisitableEditProfile }
 
   return (
     <Drawer
-      title={
-        <div>
-          Edit Profile: <span className='text-gray-500'>{user.username}</span>
-        </div>
-      }
+      title={`Edit Profile: ${user.username}`}
       placement='right'
       size='large'
       open={isVisitableEditProfile}
@@ -62,33 +59,10 @@ const EditProfile = ({ user, isVisitableEditProfile, setIsVisitableEditProfile }
         <Form.Item label='Address' name='address'>
           <Input />
         </Form.Item>
-        <Form.Item
-          label='Phone'
-          name='phone'
-          rules={[
-            {
-              validator: (_, value) => {
-                const phoneRegex = /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/;
-                if (phoneRegex.test(value)) {
-                  return Promise.resolve();
-                }
-                return Promise.reject('Phone number is invalid!');
-              },
-            },
-          ]}
-        >
+        <Form.Item label='Phone' name='phone' rules={phoneRules}>
           <Input />
         </Form.Item>
-        <Form.Item
-          label='Email'
-          name='email'
-          rules={[
-            {
-              required: true,
-              message: 'Please input your email!',
-            },
-          ]}
-        >
+        <Form.Item label='Email' name='email' rules={emailRules}>
           <Input />
         </Form.Item>
         <Form.Item className='text-right'>

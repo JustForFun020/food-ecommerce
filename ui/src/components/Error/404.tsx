@@ -1,7 +1,7 @@
 import React from 'react';
 import '@/style/error.css';
 
-const PageNotFound = ({ name }: { name: string }) => {
+const PageNotFound: React.FC<{ name: string }> = ({ name }) => {
   return (
     <div className='not-found__container h-screen flex items-center'>
       <div className='ml-8 w-1/3'>

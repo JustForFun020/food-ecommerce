@@ -105,8 +105,10 @@ export class ProductService {
       __dirname,
       '..',
       '..',
+      '..',
       `/uploads/${uuidv4()}-${file.filename}`,
     );
+    console.log(path);
     await new Promise((resolve, reject) => {
       stream
         .pipe(createWriteStream(path))

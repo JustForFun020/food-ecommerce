@@ -14,7 +14,7 @@ import AdminEditCategory from './EditCategory';
 import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
-const AdminCategories = () => {
+const AdminCategories: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Categories>({} as Categories);

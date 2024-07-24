@@ -19,13 +19,13 @@ interface CommentState {
   comment: string;
 }
 
-const CreateComment = ({
+const CreateComment: React.FC<CreateCommentProps> = ({
   isModalVisible,
   setIsModalVisible,
   currentUser,
   productName,
   setListRate,
-}: CreateCommentProps) => {
+}) => {
   const [commentValue, setCommentValue] = useState<CommentState>({ rating: 0, comment: '' } as CommentState);
 
   const [createComment, { loading: createCommentLoading }] = useMutation(CREATE_RATE_MUTATION, {

@@ -98,7 +98,7 @@ const filterTags = [
   },
 ];
 
-const AdminProducts = () => {
+const AdminProducts: React.FC = () => {
   const [isVisitableDrawer, setIsVisitableDrawer] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 

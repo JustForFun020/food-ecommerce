@@ -12,77 +12,61 @@ import {
   TagOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import _ from 'lodash';
+import { useLogout } from '@/lib/hook/useLogout';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
-const AdminMenu = () => {
-  const router = useRouter();
+const menuItem: MenuProps['items'] = [
+  {
+    label: 'Home',
+    key: 'home',
+    icon: <HomeOutlined />,
+  },
+  {
+    label: 'Dashboard',
+    key: 'dashboard',
+    icon: <PieChartOutlined />,
+  },
+  {
+    label: 'Users',
+    key: 'users',
+    icon: <UserOutlined />,
+  },
+  {
+    label: 'Products',
+    key: 'products',
+    icon: <TagOutlined />,
+  },
+  {
+    label: 'Categories',
+    key: 'categories',
+    icon: <TagOutlined />,
+  },
+  {
+    label: 'Orders',
+    key: 'orders',
+    icon: <ShoppingCartOutlined />,
+  },
+  {
+    label: 'Logout',
+    key: 'logout',
+    icon: <LoginOutlined />,
+  },
+];
+
+const AdminMenu: React.FC = () => {
+  const { navigateTo } = useCustomRouter();
+  const { logout } = useLogout();
   const pathName = usePathname().split('/')[2];
 
   const handleClickMenu: MenuProps['onClick'] = (e) => {
-    switch (e.key) {
-      case 'home':
-        router.push('/admin');
-        break;
-      case 'dashboard':
-        router.push('/admin/dashboard');
-        break;
-      case 'users':
-        router.push('/admin/users');
-        break;
-      case 'products':
-        router.push('/admin/products');
-        break;
-      case 'categories':
-        router.push('/admin/categories');
-        break;
-      case 'orders':
-        router.push('/admin/orders');
-        break;
-      case 'logout':
-        localStorage.removeItem('token');
-        router.push('/login');
-        break;
-      default:
-        break;
+    const itemKey = _.find(menuItem, { key: e.key });
+    if (itemKey?.key === 'logout') {
+      logout();
+    } else {
+      navigateTo(`/admin/${e.key}`);
     }
   };
-
-  const menuItem: MenuProps['items'] = [
-    {
-      label: 'Home',
-      key: 'home',
-      icon: <HomeOutlined />,
-    },
-    {
-      label: 'Dashboard',
-      key: 'dashboard',
-      icon: <PieChartOutlined />,
-    },
-    {
-      label: 'Users',
-      key: 'users',
-      icon: <UserOutlined />,
-    },
-    {
-      label: 'Products',
-      key: 'products',
-      icon: <TagOutlined />,
-    },
-    {
-      label: 'Categories',
-      key: 'categories',
-      icon: <TagOutlined />,
-    },
-    {
-      label: 'Orders',
-      key: 'orders',
-      icon: <ShoppingCartOutlined />,
-    },
-    {
-      label: 'Logout',
-      key: 'logout',
-      icon: <LoginOutlined />,
-    },
-  ];
 
   return (
     <Layout.Sider className='fixed h-screen overflow-auto left-0 top-0 bottom-0 z-50 bg-slate-900'>

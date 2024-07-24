@@ -5,9 +5,7 @@ interface GlobalErrorProps {
   reset: () => void;
 }
 
-const GlobalError = (props: GlobalErrorProps) => {
-  const { error, reset } = props;
-
+const GlobalError: React.FC<GlobalErrorProps> = ({ error, reset }) => {
   return <div>GlobalError</div>;
 };
 

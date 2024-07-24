@@ -1,36 +1,20 @@
 'use client';
 
 import _ from 'lodash';
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Avatar, Button, Dropdown, Input, Modal } from 'antd';
+import React, { Fragment, useState } from 'react';
+import { Avatar, Button, Dropdown, Input } from 'antd';
 import type { MenuProps } from 'antd';
 import logo from '@/assets/diet.png';
 import Image from 'next/image';
-import { CloseOutlined, LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
-import { useRouter } from 'next/navigation';
+import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuththor } from '@/lib/hook/useAuththor';
-import { useDebounceValue } from 'usehooks-ts';
-import { useLazyQuery } from '@apollo/client';
-import { SEARCH_PRODUCT_QUERY } from '@/lib/graphql/query';
-import { Product } from '@/utils/types/product';
+import SearchModal from './SearchModal';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
 const Header = () => {
   const [isListSearchVisible, setListSearchVisible] = useState(false);
-  const [defaultDebounceValue, setDefaultDebounceValue] = useState('');
-  const [debouncedValue, setValue] = useDebounceValue(defaultDebounceValue, 500);
 
-  const [searchProduct, { loading, data }] = useLazyQuery(SEARCH_PRODUCT_QUERY);
-  const listSearchProduct = _.get<Product[]>(data, 'searchProduct', []);
-
-  useEffect(() => {
-    setValue(defaultDebounceValue);
-  }, [defaultDebounceValue, setValue]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [debouncedValue]);
-
-  const router = useRouter();
+  const { navigateTo } = useCustomRouter();
   const { currentUser } = useAuththor();
 
   const username = typeof window !== 'undefined' ? localStorage.getItem('username') : '';
@@ -44,7 +28,7 @@ const Header = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         setTimeout(() => {
-          router.push('/login');
+          navigateTo('/login');
         }, 1000);
       },
     },
@@ -52,67 +36,12 @@ const Header = () => {
       label: 'Profile',
       key: 'profile',
       icon: <UserOutlined />,
-      onClick: () => router.push(`/user/${username}`),
+      onClick: () => navigateTo(`/user/${username}`),
     },
   ];
 
-  const handleSearch = () => {
-    if (debouncedValue) {
-      searchProduct({
-        variables: {
-          name: debouncedValue,
-        },
-      });
-    }
-  };
-
   const renderModalSearch = () => {
-    return (
-      <Modal
-        open={isListSearchVisible}
-        footer={[]}
-        closable={false}
-        title={
-          <div className='flex items-center justify-between'>
-            <Input.Search
-              placeholder='Search food here...'
-              className='w-[300px]'
-              onChange={(e) => {
-                setDefaultDebounceValue(e.target.value);
-              }}
-              onClick={() => setListSearchVisible(true)}
-              value={defaultDebounceValue}
-            />
-            <Button
-              icon={<CloseOutlined />}
-              onClick={() => {
-                setListSearchVisible(false);
-                setDefaultDebounceValue('');
-              }}
-            ></Button>
-          </div>
-        }
-      >
-        {debouncedValue === '' ? (
-          <div className='p-18 flex items-center justify-center text-lg opacity-65 font-medium mt-10'>Not Found</div>
-        ) : (
-          <Fragment>
-            <ul className='*:leading-8 *:shadow-sm *:hover:opacity-100 *:opacity-70 transition-all duration-200 pt-6 pb-6'>
-              {listSearchProduct.map((product) => (
-                <li
-                  key={product.id}
-                  onClick={() => router.push(`/product/${product.name}`)}
-                  className='mb-2 pb-2 border-b border-b-slate-950 *:text-lg shadow-md cursor-pointer flex justify-between items-center'
-                >
-                  <span>{product.name}</span>
-                  <span>$ {product.price}</span>
-                </li>
-              ))}
-            </ul>
-          </Fragment>
-        )}
-      </Modal>
-    );
+    return <SearchModal isListSearchVisible={isListSearchVisible} setListSearchVisible={setListSearchVisible} />;
   };
 
   const userIcon = () => {
@@ -120,7 +49,7 @@ const Header = () => {
       <Fragment>
         <Input.Search
           placeholder='Search food here...'
-          className='w-[300px]'
+          className='w-[300px] cursor-pointer'
           onClick={() => setListSearchVisible(true)}
         />
         {renderModalSearch()}
@@ -134,15 +63,15 @@ const Header = () => {
   return (
     <div className='flex items-center justify-between'>
       <div className='flex justify-between items-center w-1/2 gap-14'>
-        <div className='w-1/3 flex items-center justify-between cursor-pointer' onClick={() => router.push('/')}>
+        <div className='w-1/3 flex items-center justify-between cursor-pointer' onClick={() => navigateTo('/')}>
           <Image src={logo} alt='logo' width={60} height={60} />
           <h1 className='text-4xl font-bold'>Foodie!!</h1>
         </div>
         <ul className='*:transition-all *:duration-200 w-2/3 flex items-center justify-between *:p-2 *:opacity-60 hover:*:opacity-100 *:font-medium *:cursor-pointer hover:*:underline hover:*:underline-offset-4'>
-          <li onClick={() => router.push('/')}>Home</li>
-          <li onClick={() => router.push('/explore')}>Explore</li>
-          <li onClick={() => router.push('/order')}>Order</li>
-          <li onClick={() => router.push('/contact')}>Contact</li>
+          <li onClick={() => navigateTo('/')}>Home</li>
+          <li onClick={() => navigateTo('/explore')}>Explore</li>
+          <li onClick={() => navigateTo('/order')}>Order</li>
+          <li onClick={() => navigateTo('/contact')}>Contact</li>
         </ul>
       </div>
       <div className='w-1/2 flex justify-end gap-12 items-center'>
@@ -150,11 +79,11 @@ const Header = () => {
           userIcon()
         ) : (
           <>
-            <Button onClick={() => router.push('/login')} className='flex items-center' icon={<LoginOutlined />}>
+            <Button onClick={() => navigateTo('/login')} className='flex items-center' icon={<LoginOutlined />}>
               Login
             </Button>
             <Button
-              onClick={() => router.push('/sign-up')}
+              onClick={() => navigateTo('/sign-up')}
               className='flex items-center'
               icon={<LoginOutlined />}
               type='primary'

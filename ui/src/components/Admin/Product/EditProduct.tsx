@@ -22,7 +22,7 @@ interface EditProductValue {
   }[];
 }
 
-const EditProduct = ({ product, isVisitableDrawer, setIsVisitableDrawer }: EditProductProps) => {
+const EditProduct: React.FC<EditProductProps> = ({ product, isVisitableDrawer, setIsVisitableDrawer }) => {
   const [productDescription, setProductDescription] = useState<string>('');
   const [editProductValue, setEditProductValue] = useState<EditProductValue>({
     name: '',

@@ -11,35 +11,9 @@ import moment from 'moment';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 import CreateComment from './CreateComment';
 import { ValueOfRate } from '@/utils/enum/rate';
+import { ratesOptions } from '@/utils/constance/ratesOption';
 
-const filterRateValue = [
-  {
-    label: '5 stars',
-    value: ValueOfRate.FIVE,
-  },
-  {
-    label: '4 stars',
-    value: ValueOfRate.FOUR,
-  },
-  {
-    label: '3 stars',
-    value: ValueOfRate.THREE,
-  },
-  {
-    label: '2 stars',
-    value: ValueOfRate.TWO,
-  },
-  {
-    label: '1 stars',
-    value: ValueOfRate.ONE,
-  },
-  {
-    label: 'All',
-    value: 0,
-  },
-];
-
-const Rate = ({ name }: { name: string }) => {
+const Rate: React.FC<{ name: string }> = ({ name }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [listRate, setListRate] = useState<RateType[]>([]);
   const [currentFilterRate, setCurrentFilterRate] = useState(0);
@@ -88,7 +62,7 @@ const Rate = ({ name }: { name: string }) => {
         <div className='flex items-center gap-3'>
           <h1 className='text-3xl font-medium tracking-wide'>Customer Rating</h1>
           <Select
-            options={filterRateValue}
+            options={ratesOptions}
             className='w-[200px]'
             onSelect={(e) => handleFilterRate(e)}
             value={currentFilterRate}

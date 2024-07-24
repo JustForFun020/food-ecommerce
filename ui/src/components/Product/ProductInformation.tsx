@@ -13,7 +13,7 @@ import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 import { productTagColor } from '@/utils/constance/color';
 
-const ProductInformation = ({ name }: { name: string }) => {
+const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {
     variables: { name: name },
   });

@@ -3,15 +3,15 @@
 import _ from 'lodash';
 import React from 'react';
 import Header from '../Header';
-import {  Divider, Image, Space } from 'antd';
+import { Divider, Image, Space } from 'antd';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_CATEGORIES_QUERY } from '@/lib/graphql/query';
 import { Categories as CategoriesType } from '@/utils/types/product';
 import Footer from '../Footer';
-import { useRouter } from 'next/navigation';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 
-const Categories = () => {
-  const router = useRouter();
+const Categories: React.FC = () => {
+  const { navigateTo } = useCustomRouter();
 
   const { loading, data } = useQuery(GET_ALL_CATEGORIES_QUERY);
   const categories = _.get<CategoriesType[]>(data, 'getCategories', [] as CategoriesType[]);
@@ -40,7 +40,7 @@ const Categories = () => {
             <div
               className='flex pt-6 pb-6 pl-12 pr-12 shadow-sm hover:shadow-lg cursor-pointer border border-slate-200 rounded-lg w-full transition-all duration-200'
               key={index}
-              onClick={() => router.push(`/categories/${category.name}`)}
+              onClick={() => navigateTo(`/categories/${category.name}`)}
             >
               <Image src={category.image} alt={category.name} width={300} height={150} preview={false} />
               <Divider type='vertical' />

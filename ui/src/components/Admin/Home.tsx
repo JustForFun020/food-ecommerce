@@ -9,7 +9,7 @@ import { GET_USER_BY_USERNAME_QUERY } from '@/lib/graphql/query';
 import _ from 'lodash';
 import { User } from '@/utils/types/user';
 
-const AdminHome = () => {
+const AdminHome: React.FC = () => {
   const { loading, data } = useQuery(GET_USER_BY_USERNAME_QUERY, {
     variables: {
       username: 'admin',

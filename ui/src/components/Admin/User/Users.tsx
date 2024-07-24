@@ -12,7 +12,7 @@ import { Cart, Invoice } from '@/utils/types/cart';
 import { getColumnSearchProps } from '../SearchTableColumn';
 import { useColumnSearch } from '@/lib/hook/useColumnSearch';
 
-const AdminUsers = () => {
+const AdminUsers: React.FC = () => {
   const { handleReset, handleSearch, searchInput, searchText, searchedColumn } = useColumnSearch<any>();
 
   const { loading, data } = useQuery(GET_ALL_USERS_QUERY);

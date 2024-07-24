@@ -12,7 +12,7 @@ interface CheckoutProps {
   isVisitableCheckout: boolean;
 }
 
-const Checkout = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }: CheckoutProps) => {
+const Checkout: React.FC<CheckoutProps> = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }) => {
   const { cartProducts: products } = selectedCart;
   const { currentUser } = useAuththor();
 

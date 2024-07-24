@@ -12,7 +12,7 @@ import { GET_CATEGORY_BY_NAME_QUERY } from '@/lib/graphql/query';
 import { Categories, Product } from '@/utils/types/product';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 
-const Category = ({ category: name }: { category: string }) => {
+const Category: React.FC<{ category: string }> = ({ category: name }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [product, setProduct] = useState<Product>();
   const [currentCategories, setCurrentCategories] = useState<Categories>({} as Categories);

@@ -10,76 +10,8 @@ import { useMutation } from '@apollo/client';
 import { CREATE_PRODUCT_MUTATION } from '@/lib/graphql/mutation';
 import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 import { NameOfProductTag } from '@/utils/enum/product';
-
-const categories = [
-  {
-    label: 'Vegetables',
-    value: 'Vegetables',
-  },
-  {
-    label: 'Fruits',
-    value: 'Fruits',
-  },
-  {
-    label: 'Fast Food',
-    value: 'Fast Food',
-  },
-  {
-    label: 'Meat',
-    value: 'Meat',
-  },
-  {
-    label: 'Seafood',
-    value: 'Seafood',
-  },
-  {
-    label: 'Beverages',
-    value: 'Beverages',
-  },
-];
-
-const tags = [
-  {
-    label: NameOfProductTag.BEST_SELLER,
-    value: NameOfProductTag.BEST_SELLER,
-  },
-  {
-    label: NameOfProductTag.FEATURED,
-    value: NameOfProductTag.FEATURED,
-  },
-  {
-    label: NameOfProductTag.FRESH,
-    value: NameOfProductTag.FRESH,
-  },
-  {
-    label: NameOfProductTag.HOT,
-    value: NameOfProductTag.HOT,
-  },
-  {
-    label: NameOfProductTag.LIMITED,
-    value: NameOfProductTag.LIMITED,
-  },
-  {
-    label: NameOfProductTag.NEW,
-    value: NameOfProductTag.NEW,
-  },
-  {
-    label: NameOfProductTag.SALE,
-    value: NameOfProductTag.SALE,
-  },
-  {
-    label: NameOfProductTag.SPECIAL,
-    value: NameOfProductTag.SPECIAL,
-  },
-  {
-    label: NameOfProductTag.TOP_RATED,
-    value: NameOfProductTag.TOP_RATED,
-  },
-  {
-    label: NameOfProductTag.TRENDING,
-    value: NameOfProductTag.TRENDING,
-  },
-];
+import { tagsOptions } from '@/utils/constance/tagsOption';
+import { categories } from '@/utils/constance/categoriesOption';
 
 interface ProductCategories {
   name: string;
@@ -199,7 +131,7 @@ const AdminAddProduct = () => {
         </Form.Item>
         <Form.Item label='Image' name={'productImage'}>
           <Upload name='image' onChange={handleUploadFile}>
-            <div className='cursor-pointer p-4 border border-dashed bg-[rgba(0,0,0,0.2)]'>
+            <div className='cursor-pointer pt-5 pb-5 pr-6 pl-6 border border-dashed bg-[rgba(0,0,0,0.1)]'>
               <UploadOutlined />
             </div>
           </Upload>
@@ -224,7 +156,7 @@ const AdminAddProduct = () => {
         </Form.Item>
         <Form.Item label='Tags' name={'tags'}>
           <Select
-            options={tags}
+            options={tagsOptions}
             mode='tags'
             onSelect={(value) => {
               setProductTags([...productTags, { name: value }]);

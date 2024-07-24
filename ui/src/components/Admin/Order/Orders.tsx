@@ -9,8 +9,9 @@ import _ from 'lodash';
 import { useRefreshTable } from '@/lib/hook/useRefreshTable';
 import UpdateInvoice from '../Invoice/UpdateInvoice';
 import { Invoice } from '@/utils/types/cart';
+import { formatDate } from '@/utils/formatDate';
 
-const AdminOrders = () => {
+const AdminOrders: React.FC = () => {
   const [isVisitableDrawerUpdate, setIsVisitableDrawerUpdate] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice>({} as Invoice);
 
@@ -70,7 +71,7 @@ const AdminOrders = () => {
       dataIndex: 'createdAt',
       key: 'createdAt',
       render: (date: string) => {
-        return <span>{moment(date).format('HH:mm DD/MM/YYYY')}</span>;
+        return <span>{formatDate(date)}</span>;
       },
       sorter: (a, b) => moment(a.createdAt).unix() - moment(b.createdAt).unix(),
     },

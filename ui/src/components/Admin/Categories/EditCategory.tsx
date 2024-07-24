@@ -14,12 +14,12 @@ interface EditCategoryProps {
   setIsModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const AdminEditCategory = ({
+const AdminEditCategory: React.FC<EditCategoryProps> = ({
   selectedCategory,
   isDrawerVisible,
   setIsDrawerVisible,
   setIsModalVisible,
-}: EditCategoryProps) => {
+}) => {
   const [form] = Form.useForm();
 
   const { products } = selectedCategory;
