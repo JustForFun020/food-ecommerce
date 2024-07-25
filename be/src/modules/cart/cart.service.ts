@@ -24,25 +24,23 @@ export class CartService {
   ) {}
 
   private async findOrCreateDefaultCart(uid: number): Promise<Cart> {
-    let cart = await this.cartRepository.findOne({
+    const defaultCart = await this.cartRepository.findOne({
       where: { user: { id: uid }, name: 'Default Cart' },
     });
 
-    if (!cart) {
-      const currentUser = await this.userRepository.findOne({
-        where: { id: uid },
-      });
-      cart = await this.cartRepository.save(
-        new Cart({
-          name: 'Default Cart',
-          description: 'This is Default cart',
-          topic: 'Default',
-          user: currentUser,
-        }),
-      );
-    }
+    if (defaultCart) return defaultCart;
 
-    return cart;
+    const currentUser = await this.userRepository.findOneOrFail({
+      where: { id: uid },
+    });
+    return this.cartRepository.save(
+      new Cart({
+        name: 'Default Cart',
+        description: 'This is Default cart',
+        topic: 'Default',
+        user: currentUser,
+      }),
+    );
   }
 
   async isProductInCart(pid: number, cid: number): Promise<boolean> {
@@ -52,24 +50,47 @@ export class CartService {
     return !!cartProduct;
   }
 
-  async createCart(createCart: CreateCartDto): Promise<Cart> {
-    const currentUser = await this.userRepository.findOne({
-      where: { id: createCart.uid },
+  async createCart(createCartDto: CreateCartDto): Promise<CartProducts[]> {
+    const { pid, name, description, topic, uid } = createCartDto;
+
+    await this.ensureUniqueCartName(name);
+    const products = await this.getProductsByIds(pid);
+    const currentUser = await this.userRepository.findOneOrFail({
+      where: { id: uid },
     });
-    const cart = new Cart({
-      name: createCart.name,
-      description: createCart.description,
-      topic: createCart.topic,
-      user: currentUser,
-    });
-    return this.cartRepository.save(cart);
+
+    const cart = await this.cartRepository.save(
+      new Cart({ name, description, topic, user: currentUser }),
+    );
+
+    const cartProducts = products.map(
+      (product) => new CartProducts({ cart, product, quantity: 1 }),
+    );
+
+    return this.cartProductsRepository.save(cartProducts);
+  }
+
+  private async ensureUniqueCartName(name: string): Promise<void> {
+    const existingCart = await this.cartRepository.findOne({ where: { name } });
+    if (existingCart) {
+      throw new HttpException(
+        'Cart name already exists',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  private async getProductsByIds(ids: number[]): Promise<Product[]> {
+    return Promise.all(
+      ids.map((id) => this.productRepository.findOneOrFail({ where: { id } })),
+    );
   }
 
   async addProductToCart(
     createCartProductDto: CreateCartProductsDto,
   ): Promise<CartProducts> {
     const { pid, cid, quantity, uid } = createCartProductDto;
-    const product = await this.productRepository.findOne({
+    const product = await this.productRepository.findOneOrFail({
       where: { id: pid },
       relations: ['images'],
     });
@@ -77,7 +98,7 @@ export class CartService {
     const cart =
       cid === 0
         ? await this.findOrCreateDefaultCart(uid)
-        : await this.cartRepository.findOne({ where: { id: cid } });
+        : await this.cartRepository.findOneOrFail({ where: { id: cid } });
 
     if (await this.isProductInCart(pid, cart.id)) {
       throw new HttpException(
@@ -86,8 +107,9 @@ export class CartService {
       );
     }
 
-    const cartProduct = new CartProducts({ product, cart, quantity });
-    return this.cartProductsRepository.save(cartProduct);
+    return this.cartProductsRepository.save(
+      new CartProducts({ product, cart, quantity }),
+    );
   }
 
   async getAllUserCart(uid: number): Promise<Cart[]> {
@@ -101,7 +123,7 @@ export class CartService {
   }
 
   async getCartById(cid: number): Promise<Cart> {
-    return this.cartRepository.findOne({
+    return this.cartRepository.findOneOrFail({
       where: { id: cid },
       relations: ['cartProducts'],
     });
@@ -128,21 +150,28 @@ export class CartService {
 
   async updateCart(updateCartDto: UpdateCartDto): Promise<Cart> {
     const { uid, cartProducts, cid, name, description, topic } = updateCartDto;
-    const cart = await this.cartRepository.findOne({
+    const cart = await this.cartRepository.findOneOrFail({
       where: { user: { id: uid }, id: cid },
     });
 
-    await Promise.all(
-      cartProducts.map(async ({ pid, quantity }) => {
-        await this.cartProductsRepository.update(
-          { cart: { id: cid }, product: { id: pid } },
-          { quantity },
-        );
-      }),
-    );
+    await this.updateCartProducts(cid, cartProducts);
 
     const updatedCart = { ...cart, name, description, topic };
     await this.cartRepository.update({ id: cid }, updatedCart);
     return updatedCart;
+  }
+
+  private async updateCartProducts(
+    cid: number,
+    cartProducts: { pid: number; quantity: number }[],
+  ): Promise<void> {
+    await Promise.all(
+      cartProducts.map(({ pid, quantity }) =>
+        this.cartProductsRepository.update(
+          { cart: { id: cid }, product: { id: pid } },
+          { quantity },
+        ),
+      ),
+    );
   }
 }

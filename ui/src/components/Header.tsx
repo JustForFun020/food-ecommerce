@@ -10,6 +10,7 @@ import { LoginOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import SearchModal from './SearchModal';
 import { useCustomRouter } from '@/lib/hook/useCustomRouter';
+import { Product } from '@/utils/types/product';
 
 const Header = () => {
   const [isListSearchVisible, setListSearchVisible] = useState(false);
@@ -41,7 +42,17 @@ const Header = () => {
   ];
 
   const renderModalSearch = () => {
-    return <SearchModal isListSearchVisible={isListSearchVisible} setListSearchVisible={setListSearchVisible} />;
+    return (
+      <SearchModal
+        isListSearchVisible={isListSearchVisible}
+        setListSearchVisible={setListSearchVisible}
+        handleClickProduct={handleClickProduct}
+      />
+    );
+  };
+
+  const handleClickProduct = (product: Product) => {
+    navigateTo(`/product/${product.id}`);
   };
 
   const userIcon = () => {

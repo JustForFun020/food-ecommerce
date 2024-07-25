@@ -5,8 +5,8 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Header from '../Header';
 import '@/style/order.css';
 import Link from 'next/link';
-import { Button, Layout, message, Tag } from 'antd';
-import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, FloatButton, Layout, message, Tag } from 'antd';
+import { CheckOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { useAuththor } from '@/lib/hook/useAuththor';
@@ -14,10 +14,12 @@ import { DELETE_CART_MUTATION, DELETE_PRODUCT_FROM_CART_MUTATION } from '@/lib/g
 import { Cart } from '@/utils/types/cart';
 import EditCart from './EditCart';
 import Checkout from './Checkout';
+import CreateCart from './CreateCart';
 
 const Order = () => {
   const [isVisitableEditCart, setIsVisitableEditCart] = useState(false);
   const [isVisitableCheckout, setIsVisitableCheckout] = useState(false);
+  const [isVisitableCreateCart, setIsVisitableCreateCart] = useState(false);
   const [selectedCart, setSelectedCart] = useState<Cart>({} as Cart);
 
   const { currentUser, error: unAuthorError } = useAuththor();
@@ -89,6 +91,12 @@ const Order = () => {
       <header className='pr-8 pl-6 pt-6 pb-6'>
         <Header />
       </header>
+      <FloatButton
+        icon={<PlusCircleOutlined />}
+        type='primary'
+        tooltip='Create Cart'
+        onClick={() => setIsVisitableCreateCart(true)}
+      />
       <div
         className={`
         ${_.isEmpty(carts) && 'order__content'} min-h-screen w-full mt-6 pr-20 pl-20
@@ -184,6 +192,11 @@ const Order = () => {
         selectedCart={selectedCart}
         isVisitableCheckout={isVisitableCheckout}
         setIsVisitableCheckout={setIsVisitableCheckout}
+      />
+      <CreateCart
+        isVisitableCreateCart={isVisitableCreateCart}
+        setIsVisitableCreateCart={setIsVisitableCreateCart}
+        uid={Number(currentUser.id)}
       />
     </main>
   );
