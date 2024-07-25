@@ -12,6 +12,7 @@ import { GET_ALL_PRODUCTS_QUERY } from '@/lib/graphql/query';
 import { NameOfProductTag } from '@/utils/enum/product';
 import { tagsOptions } from '@/utils/constance/tagsOption';
 import { categories } from '@/utils/constance/categoriesOption';
+import { requiredField } from '@/utils/formValidate';
 
 interface ProductCategories {
   name: string;
@@ -49,7 +50,7 @@ const AdminAddProduct = () => {
         createProduct: {
           name: product.name,
           price: Number(product.price),
-          description: product.description,
+          description: product.description ?? '',
           categories: productCategories[0],
           amount: Number(product.amount),
           tags: productTags.map((tag) => tag.name),
@@ -85,40 +86,13 @@ const AdminAddProduct = () => {
         labelCol={{ span: 8 }}
         onFinish={onFormSubmit}
       >
-        <Form.Item
-          label='Product Name'
-          name={'name'}
-          rules={[
-            {
-              required: true,
-              message: 'Product Name is required',
-            },
-          ]}
-        >
+        <Form.Item label='Product Name' name={'name'} rules={requiredField('name')}>
           <Input placeholder='Product Name' name='name' onChange={onInputChange} value={product.name} />
         </Form.Item>
-        <Form.Item
-          label='Product Amount'
-          name={'amount'}
-          rules={[
-            {
-              required: true,
-              message: 'Product Amount is required',
-            },
-          ]}
-        >
+        <Form.Item label='Product Amount' name={'amount'} rules={requiredField('amount')}>
           <Input placeholder='Product Amount' name='amount' onChange={onInputChange} value={product.amount} />
         </Form.Item>
-        <Form.Item
-          label='Product Price'
-          name={'price'}
-          rules={[
-            {
-              required: true,
-              message: 'Product Price is required',
-            },
-          ]}
-        >
+        <Form.Item label='Product Price' name={'price'} rules={requiredField('price')}>
           <Input placeholder='Product Price' name='price' onChange={onInputChange} value={product.price} />
         </Form.Item>
         <Form.Item label='Product Description' name={'description'}>
@@ -136,16 +110,7 @@ const AdminAddProduct = () => {
             </div>
           </Upload>
         </Form.Item>
-        <Form.Item
-          name='productCategories'
-          label='Categories'
-          rules={[
-            {
-              required: true,
-              message: 'Please select a category',
-            },
-          ]}
-        >
+        <Form.Item name='productCategories' label='Categories' rules={requiredField('categories')}>
           <Select
             options={categories}
             onSelect={(value) => {

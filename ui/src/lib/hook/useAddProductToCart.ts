@@ -3,50 +3,38 @@ import { ApolloError, useMutation } from '@apollo/client';
 import { useAuththor } from './useAuththor';
 import { ADD_PRODUCT_TO_CART_MUTATION } from '../graphql/mutation';
 import { GET_ALL_USER_CART } from '../graphql/query';
+import { message } from 'antd';
 
-type AddProductToCartDto = {
-  cid: number;
-  pid: number;
-  quantity: number;
-  uid: number;
-};
-
-export const useAddProductToCart = (
-  cid: number | undefined,
-  pid: number,
-  quantity: number,
-  handle?: {
-    handleCompleted?: (res: any) => any;
-    handleError?: (error?: ApolloError) => any;
-  },
-) => {
-  const { handleCompleted, handleError } = handle as {
-    handleCompleted?: (res: any) => any;
-    handleError?: (error?: ApolloError) => any;
-  };
-
+export const useAddProductToCart = () => {
   const { currentUser } = useAuththor();
 
-  const addProductDto: AddProductToCartDto = {
-    cid: cid ? Number(cid) : 0,
-    pid: Number(pid),
-    quantity: Number(quantity),
-    uid: Number(currentUser?.id) ?? 0,
-  };
-
   const [addProductToCart, { loading, data, error }] = useMutation(ADD_PRODUCT_TO_CART_MUTATION, {
-    variables: { addProductDto },
     onCompleted: (data) => {
-      handleCompleted && handleCompleted(data);
+      message.success('Add product to cart successfully');
     },
     onError: (error) => {
-      handleError && handleError(error);
+      message.error(`Add product to cart failed: ${error.message}`);
     },
-    refetchQueries: [{ query: GET_ALL_USER_CART, variables: { uid: Number(currentUser.id) } }],
+    refetchQueries(result) {
+      return [{ query: GET_ALL_USER_CART, variables: { uid: Number(currentUser?.id) } }];
+    },
   });
 
+  const handleAddProductToCart = (cid: number | undefined, pid: number, quantity: number) => {
+    addProductToCart({
+      variables: {
+        addProductDto: {
+          cid: cid ? Number(cid) : 0,
+          pid: Number(pid),
+          quantity: Number(quantity),
+          uid: Number(currentUser?.id) ?? 0,
+        },
+      },
+    });
+  };
+
   return {
-    addProductToCart,
+    handleAddProductToCart,
     addProductToCartLoading: loading,
     addProductToCartData: data,
     addProductToCartError: error,

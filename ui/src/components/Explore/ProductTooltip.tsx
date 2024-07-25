@@ -1,9 +1,11 @@
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
+import { useUserCart } from '@/lib/hook/useUserCart';
 import { Cart } from '@/utils/types/cart';
 import { Product } from '@/utils/types/product';
 import { Card, Tooltip, Image, Avatar, Button, message } from 'antd';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import AddProductToCart from '../AddProductToCart';
 
 interface ProductTooltipProps {
   product: Product;
@@ -11,14 +13,7 @@ interface ProductTooltipProps {
 }
 
 const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) => {
-  const { addProductToCart } = useAddProductToCart(undefined, product.id, 1, {
-    handleCompleted(res) {
-      message.success('Add product to cart successfully');
-    },
-    handleError(error) {
-      message.error(error?.message || 'Add product to cart failed');
-    },
-  });
+  const { userCart } = useUserCart();
 
   const customTooltipTitle = () => {
     return (
@@ -40,12 +35,7 @@ const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) =>
           </div>
         </div>
         <div className='text-right mt-4 mb-4 w-full pr-2'>
-          <Button
-            className='border pr-2 pl-4 border-slate-300 rounded-lg hover:bg-slate-700 transition-all duration-200'
-            onClick={() => addProductToCart()}
-          >
-            Add To Cart
-          </Button>
+          <AddProductToCart carts={userCart} pid={product.id} />
         </div>
       </div>
     );
