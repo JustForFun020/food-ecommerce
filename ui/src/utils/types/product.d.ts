@@ -9,6 +9,7 @@ export type Product = {
   description: string;
   categories: Categories;
   images: ProductImage[];
+  averageRate: number;
   tags: ProductTag[];
 };
 

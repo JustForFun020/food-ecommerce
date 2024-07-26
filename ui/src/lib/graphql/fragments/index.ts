@@ -12,6 +12,13 @@ export const USER_FIELD = gql`
       name
       price
       createdAt
+      products {
+        name
+        price
+        images {
+          imageUrl
+        }
+      }
     }
     carts {
       name

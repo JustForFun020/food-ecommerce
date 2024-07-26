@@ -4,7 +4,7 @@ import { Cart } from '@/utils/types/cart';
 import { Product } from '@/utils/types/product';
 import { Card, Tooltip, Image, Avatar, Button, message } from 'antd';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 import AddProductToCart from '../AddProductToCart';
 
 interface ProductTooltipProps {
@@ -17,7 +17,7 @@ const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) =>
 
   const customTooltipTitle = () => {
     return (
-      <div className='*:leading-10 w-full overflow-hidden'>
+      <div className='*:leading-10 overflow-hidden'>
         <p className='font-bold w-[250px] text-xl mb-3'>{product.name}</p>
         <div className='flex gap-4 items-start'>
           <Avatar src={product.images[0].imageUrl} size={100} />
@@ -26,7 +26,8 @@ const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) =>
               <span className='font-bold w-full opacity-80'>Price: </span>$ {product.price}
             </p>
             <p>
-              <span className='font-bold w-full opacity-80'>Rating: </span>0
+              <span className='font-bold w-full opacity-80'>Rating: </span>
+              {product.averageRate}
             </p>
             <p>
               <span className='font-bold w-full opacity-80'>Category: </span>
@@ -42,7 +43,7 @@ const ProductTooltip: React.FC<ProductTooltipProps> = ({ product, children }) =>
   };
 
   return (
-    <Tooltip key={product.name} title={customTooltipTitle} className='w-[380px]'>
+    <Tooltip key={product.name} title={customTooltipTitle} className='w-[264px]'>
       {children}
     </Tooltip>
   );

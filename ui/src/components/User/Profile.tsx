@@ -11,6 +11,7 @@ import EditProfile from './EditProfile';
 import { formatDate } from '@/utils/formatDate';
 import { getUserData } from '@/utils/userData';
 import '@/style/order.css';
+import HistoryPurchased from './HistoryPurchased';
 
 interface ProfileProps {
   username: string;
@@ -75,7 +76,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       <Divider />
       <div>
         <h1 className='text-2xl font-bold tracking-wide mb-5 opacity-75'>Purchases history</h1>
-        {_.isEmpty(user.invoices) ? <div>You do not have any invoices</div> : renderInvoices()}
+        <HistoryPurchased invoices={user.invoices} />
       </div>
       <EditProfile
         user={user}
