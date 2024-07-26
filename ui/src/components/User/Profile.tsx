@@ -33,23 +33,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
     </div>
   );
 
-  const renderInvoices = () => (
-    <ul className='*:leading-8'>
-      {_.map(user.invoices, (invoice) => (
-        <li
-          key={invoice.id}
-          className='flex justify-between items-center pt-4 pb-4 pr-10 pl-10 border border-slate-200 rounded-md shadow-md mb-5'
-        >
-          <p className='flex flex-col *:leading-8'>
-            <span className='font-medium'>{invoice.name}</span>
-            <span className='opacity-65'>{formatDate(invoice.createdAt)}</span>
-          </p>
-          <p className='font-medium opacity-65'>$ {invoice.price}</p>
-        </li>
-      ))}
-    </ul>
-  );
-
   return (
     <div className='p-8'>
       <div className='w-[664px] m-auto p-6 border border-slate-200 rounded-lg bg-[rgba(0,0,0,.05)] shadow-md h-fit]'>

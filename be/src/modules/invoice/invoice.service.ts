@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import Stripe from 'stripe';
 
 import { Invoice } from '../../common/entity/invoiceEntity/invoice.entity';
 import { CreateInvoiceDto } from '../../common/dto/invoiceDto/create-invoice.dto';
@@ -16,7 +17,12 @@ export class InvoiceService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
-  ) {}
+    private readonly stripe: Stripe,
+  ) {
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+    });
+  }
 
   async createInvoice(createInvoiceDto: CreateInvoiceDto) {
     const { userId, pid } = createInvoiceDto;

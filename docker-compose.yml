@@ -42,6 +42,7 @@ services:
       MYSQL_USERNAME: ${MYSQL_USERNAME}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MONGODB_URI: ${MONGODB_URI}
 
 ## Database Service
   mysql-db:
@@ -53,6 +54,16 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
       - meee:/data/mysql
+
+  ## MongoDB Service
+  mongo-db:
+    image: mongo:latest
+    volumes:
+      - meee:/data/mongo
+    environment:
+      MONGO_INITDB_DATABASE: meee
+    ports:
+      - 27018:27017
 
 volumes:
   meee:      
