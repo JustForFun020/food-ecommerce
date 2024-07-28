@@ -48,7 +48,11 @@ export const UPDATE_CATEGORY_MUTATION = updateCategory;
 import { createInvoice } from './invoice/createInvoice';
 import { updateStatusInvoice } from './invoice/updateStatusInvoice';
 import { deleteInvoice } from './invoice/deleteInvoice';
+import { createPaymentIntent } from './invoice/createPaymentIntent';
+import { createPayment } from './invoice/createPayment';
 
 export const CREATE_INVOICE_MUTATION = createInvoice;
 export const TOGGLE_STATUS_INVOICE_MUTATION = updateStatusInvoice;
 export const DELETE_INVOICE_MUTATION = deleteInvoice;
+export const CREATE_PAYMENT_INTENT_MUTATION = createPaymentIntent;
+export const CREATE_PAYMENT_MUTATION = createPayment;

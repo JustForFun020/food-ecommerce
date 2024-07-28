@@ -23,14 +23,11 @@ const reducer = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    setBasicInformationCart: (state, action) => {
-      state.cartInformation = action.payload;
-    },
-    setProductQuantity: (state, action) => {
+    setCartCheckout: (state, action) => {
       state.cartProducts = action.payload;
     },
   },
 });
 
-export const { setBasicInformationCart, setProductQuantity } = reducer.actions;
+export const { setCartCheckout } = reducer.actions;
 export const cartReducer = reducer.reducer;
