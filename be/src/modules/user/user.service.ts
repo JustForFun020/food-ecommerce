@@ -18,10 +18,17 @@ export class UserService {
     private productRepository: Repository<Product>,
   ) {}
 
+  private readonly userRelation = [
+    'carts',
+    'invoices',
+    'invoices.products',
+    'invoices.products.images',
+  ];
+
   async getUserByUsername(username: string) {
     const user = await this.userRepository.findOne({
       where: { username },
-      relations: ['carts', 'invoices'],
+      relations: this.userRelation,
     });
 
     if (!user) {
@@ -55,7 +62,7 @@ export class UserService {
           name: 'USER',
         },
       },
-      relations: ['carts', 'carts.cartProducts', 'rates', 'roles', 'invoices'],
+      relations: ['carts.cartProducts', 'rates', 'roles', ...this.userRelation],
     });
     return users;
   }

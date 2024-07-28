@@ -11,6 +11,7 @@ import EditProfile from './EditProfile';
 import { formatDate } from '@/utils/formatDate';
 import { getUserData } from '@/utils/userData';
 import '@/style/order.css';
+import HistoryPurchased from './HistoryPurchased';
 
 interface ProfileProps {
   username: string;
@@ -30,23 +31,6 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       <p className='text-lg font-bold leading-9'>{label}</p>
       <p className='font-medium opacity-70'>{value ?? 'No information'}</p>
     </div>
-  );
-
-  const renderInvoices = () => (
-    <ul className='*:leading-8'>
-      {_.map(user.invoices, (invoice) => (
-        <li
-          key={invoice.id}
-          className='flex justify-between items-center pt-4 pb-4 pr-10 pl-10 border border-slate-200 rounded-md shadow-md mb-5'
-        >
-          <p className='flex flex-col *:leading-8'>
-            <span className='font-medium'>{invoice.name}</span>
-            <span className='opacity-65'>{formatDate(invoice.createdAt)}</span>
-          </p>
-          <p className='font-medium opacity-65'>$ {invoice.price}</p>
-        </li>
-      ))}
-    </ul>
   );
 
   return (
@@ -75,7 +59,7 @@ const Profile: React.FC<ProfileProps> = ({ username }) => {
       <Divider />
       <div>
         <h1 className='text-2xl font-bold tracking-wide mb-5 opacity-75'>Purchases history</h1>
-        {_.isEmpty(user.invoices) ? <div>You do not have any invoices</div> : renderInvoices()}
+        <HistoryPurchased invoices={user.invoices} />
       </div>
       <EditProfile
         user={user}

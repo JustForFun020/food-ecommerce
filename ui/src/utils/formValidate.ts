@@ -35,3 +35,12 @@ export const phoneRules = [
     },
   },
 ];
+
+export const requiredField = (fieldName: string): Rule[] => {
+  return [
+    {
+      required: true,
+      message: `Please input your ${fieldName}!`,
+    },
+  ];
+};

@@ -1,7 +1,7 @@
 'use client';
 
-import _ from 'lodash';
-import React from 'react';
+import _, { get } from 'lodash';
+import React, { useEffect, useState } from 'react';
 import { Badge, Button, Carousel, Divider, Input, Modal, Rate, Tag, Image } from 'antd';
 import { useRouter } from 'next/navigation';
 import PageNotFound from '../Error/404';
@@ -12,8 +12,14 @@ import Link from 'next/link';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
 import { GET_RATE_PRODUCT } from '@/lib/graphql/query/product/getRateProduct';
 import { productTagColor } from '@/utils/constance/color';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
+import { useUserCart } from '@/lib/hook/useUserCart';
+import AddProductToCart from '../AddProductToCart';
 
 const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
+  const { navigateTo } = useCustomRouter();
+  const { getUserCart, userCart, setUserCart } = useUserCart();
+
   const { loading, data } = useQuery(GET_PRODUCT_BY_NAME_QUERY, {
     variables: { name: name },
   });
@@ -34,63 +40,12 @@ const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
   });
   const averageRate = _.meanBy(_.get(ratesData, 'getRateByProduct', []), 'score');
 
-  const { addProductToCart } = useAddProductToCart(undefined, product.id, 1, {
-    handleCompleted() {
-      return Modal.success({
-        title: <div className='text-xl'>Add product to cart successfully</div>,
-        footer: [
-          <div key={'footer'} className='bg-gray-300 p-6 text-center opacity-65 font-bold'>
-            Foodie!!!
-          </div>,
-        ],
-        closable: true,
-        maskClosable: true,
-        content: (
-          <div className='mb-8 mt-6'>
-            <div className='grid grid-cols-3 gap-2'>
-              <Image src={product.images[0].imageUrl} alt='' width={200} height={200} />
-              <div className='*:leading-8'>
-                <p className='text-3xl font-bold'>{product.name}</p>
-                <p>Price: $ {product.price}</p>
-              </div>
-            </div>
-            <div className='text-right'>
-              <Link
-                href='/order'
-                className='pr-4 pl-4 pt-2 pb-2 border border-slate-300 rounded-lg bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.3)] transition-all duration-200'
-              >
-                Go to cart
-              </Link>
-            </div>
-          </div>
-        ),
-        width: 800,
-      });
-    },
-    handleError(error) {
-      return Modal.error({
-        footer: [],
-        closable: true,
-        maskClosable: true,
-        title: 'Add product to cart failed',
-        content: (
-          <div className='mt-6 mb-6'>
-            <p className='text-center font-bold opacity-70 text-xl'>{error?.message}</p>
-            <div className='text-right mt-8'>
-              <Link
-                href='/order'
-                className='pr-4 pl-4 pt-2 pb-2 border border-slate-300 rounded-lg bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.3)] transition-all duration-200'
-              >
-                Go to cart
-              </Link>
-            </div>
-          </div>
-        ),
-      });
-    },
-  });
-
-  const router = useRouter();
+  useEffect(() => {
+    getUserCart().then((res) => {
+      const userCart = _.get(res.data, 'getAllUserCarts', []);
+      setUserCart(userCart);
+    });
+  }, [getUserCart, setUserCart, userCart]);
 
   if (loading || getRelatedLoading || getRateLoading) {
     return <div>Loading...</div>;
@@ -106,26 +61,28 @@ const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
         <div className='mr-6 w-1/3'>
           <Image className='w-full' src={product?.images[0].imageUrl} alt={product.name} width={500} height={500} />
         </div>
-        <div className='leading-8 w-2/3'>
-          <div className='w-2/3'>
-            <Badge.Ribbon text={product.categories.name} placement='end' color='yellow'>
-              <span className='text-4xl tracking-wide font-bold mr-12'>{product.name}</span>
-            </Badge.Ribbon>
+        <div className='leading-8 w-2/3 flex flex-col justify-between'>
+          <div>
+            <div className='w-2/3'>
+              <Badge.Ribbon text={product.categories.name} placement='end' color='yellow'>
+                <span className='text-4xl tracking-wide font-bold mr-12'>{product.name}</span>
+              </Badge.Ribbon>
+            </div>
+            <ul className='flex mt-4'>
+              {_.map(product.tags, (tag) => (
+                <li key={tag.id} className='mr-4'>
+                  <Tag color={productTagColor[tag.name]}>{tag.name}</Tag>
+                </li>
+              ))}
+            </ul>
+            <p className='text-lg mt-4 mb-4 opacity-70'>{product.description}</p>
+            <p className='text-lg mb-4'>Price: $ {product.price}</p>
+            <p className='text-lg mb-4'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
           </div>
-          <ul className='flex mt-4'>
-            {_.map(product.tags, (tag) => (
-              <li key={tag.id} className='mr-4'>
-                <Tag color={productTagColor[tag.name]}>{tag.name}</Tag>
-              </li>
-            ))}
-          </ul>
-          <p className='text-lg mt-4 mb-4 opacity-70'>{product.description}</p>
-          <p className='text-lg mb-4'>Price: $ {product.price}</p>
-          <p className='text-lg mb-4'>Rating: {averageRate ? averageRate.toFixed(2) : 'No rating'}</p>
+          <div className='text-right'>
+            <AddProductToCart carts={userCart} pid={product.id} />
+          </div>
         </div>
-        <Button className='absolute bottom-5 right-5' type='primary' onClick={() => addProductToCart()}>
-          Add to cart
-        </Button>
       </div>
       <Divider className='bg-slate-400' />
       <div>
@@ -136,7 +93,7 @@ const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
               {_.map(_.slice(relatedProduct, 0, 5), (product) => {
                 return (
                   <div
-                    onClick={() => router.push(`/product/${product.name}`)}
+                    onClick={() => navigateTo(`/product/${product.name}`)}
                     key={product.name}
                     className='flex cursor-pointer flex-col items-center justify-center'
                   >
@@ -160,7 +117,7 @@ const ProductInformation: React.FC<{ name: string }> = ({ name }) => {
                 {_.map(_.slice(relatedProduct, 5, 10), (product) => {
                   return (
                     <div
-                      onClick={() => router.push(`/product/${product.name}`)}
+                      onClick={() => navigateTo(`/product/${product.name}`)}
                       key={product.name}
                       className='flex cursor-pointer flex-col items-center justify-center'
                     >

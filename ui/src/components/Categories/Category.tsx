@@ -11,6 +11,8 @@ import { useQuery } from '@apollo/client';
 import { GET_CATEGORY_BY_NAME_QUERY } from '@/lib/graphql/query';
 import { Categories, Product } from '@/utils/types/product';
 import { useAddProductToCart } from '@/lib/hook/useAddProductToCart';
+import AddProductToCart from '../AddProductToCart';
+import { useUserCart } from '@/lib/hook/useUserCart';
 
 const Category: React.FC<{ category: string }> = ({ category: name }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -24,15 +26,8 @@ const Category: React.FC<{ category: string }> = ({ category: name }) => {
       setCurrentCategories(category);
     },
   });
-  const { addProductToCart } = useAddProductToCart(undefined, product?.id ?? 0, 1, {
-    handleCompleted(res) {
-      setIsModalVisible(false);
-      message.success('Product added to cart');
-    },
-    handleError(error) {
-      message.error(error?.message ?? '');
-    },
-  });
+
+  const { userCart } = useUserCart();
 
   const category = _.get<Categories>(data, 'getCategoryByName', {} as Categories);
 
@@ -72,11 +67,7 @@ const Category: React.FC<{ category: string }> = ({ category: name }) => {
           </div>
         }
         open={isModalVisible}
-        footer={[
-          <Button key='add--btn' type='primary' onClick={() => addProductToCart()}>
-            Add to cart
-          </Button>,
-        ]}
+        footer={[<AddProductToCart key={product?.id} carts={userCart} pid={product?.id ?? 0} />]}
         onCancel={() => setIsModalVisible(false)}
         width={800}
       >

@@ -11,6 +11,10 @@ const nextConfig = {
     'rc-tree',
     'rc-table',
   ],
+  env: {
+    NEXT_STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    NEXT_STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+  },
   reactStrictMode: false,
   images: {
     remotePatterns: [

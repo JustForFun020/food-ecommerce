@@ -1,76 +1,156 @@
 import _ from 'lodash';
-import { Modal, Button, message } from 'antd';
-import React from 'react';
-import { Cart, CartProducts } from '@/utils/types/cart';
-import { useMutation } from '@apollo/client';
-import { CREATE_INVOICE_MUTATION } from '@/lib/graphql/mutation';
+import React, { useEffect } from 'react';
+import {
+  CREATE_INVOICE_MUTATION,
+  CREATE_PAYMENT_INTENT_MUTATION,
+  CREATE_PAYMENT_MUTATION,
+} from '@/lib/graphql/mutation';
+import { useAppSelector } from '@/lib/hook/useAppSelector';
 import { useAuththor } from '@/lib/hook/useAuththor';
+import { convertToSubCurrency } from '@/utils/convertToSubCurrency';
+import { emailRules, requiredField } from '@/utils/formValidate';
+import { Product } from '@/utils/types/product';
+import { useMutation } from '@apollo/client';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { Button, Form, Input, message } from 'antd';
+import { Currency, PaymentMethod, StatusPayment } from '@/utils/enum/payment';
+import type { StripePaymentElementOptions } from '@stripe/stripe-js';
 
 interface CheckoutProps {
-  selectedCart: Cart;
-  setIsVisitableCheckout: React.Dispatch<React.SetStateAction<boolean>>;
-  isVisitableCheckout: boolean;
+  amount: number;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ selectedCart, setIsVisitableCheckout, isVisitableCheckout }) => {
-  const { cartProducts: products } = selectedCart;
+const paymentElementOptions: StripePaymentElementOptions = {
+  fields: {
+    billingDetails: {
+      name: 'auto',
+      email: 'auto',
+    },
+  },
+};
+
+const Checkout: React.FC<CheckoutProps> = ({ amount }) => {
+  const [clientSecret, setClientSecret] = React.useState('');
+
   const { currentUser } = useAuththor();
 
-  const [createInvoice, { loading: createInvoiceLoading }] = useMutation(CREATE_INVOICE_MUTATION, {
-    onCompleted: () => {
-      message.success('Checkout successfully. Please wait your order is being processed.');
-      setIsVisitableCheckout(false);
+  const products = useAppSelector((state) => state.cartReducer.cartProducts);
+  const listProductsCheckout = _.map(products, (p) => {
+    const product = _.get(p, 'product', {} as Product);
+    return {
+      id: Number(product.id),
+      name: product.name,
+      price: product.price,
+      quantity: p.quantity,
+    };
+  });
+
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [form] = Form.useForm();
+
+  const [createPaymentIntent] = useMutation(CREATE_PAYMENT_INTENT_MUTATION, {
+    onCompleted: (data) => {
+      setClientSecret(data.createPaymentIntent);
     },
     onError: (error) => {
       message.error(error.message);
     },
   });
+  const [createPayment] = useMutation(CREATE_PAYMENT_MUTATION);
+  const [createInvoice] = useMutation(CREATE_INVOICE_MUTATION);
 
-  const handleCheckout = () => {
-    const totalPrice = _.sumBy(products, (p: CartProducts) => p.quantity * p.product.price);
-    createInvoice({
+  useEffect(() => {
+    createPaymentIntent({ variables: { amount: convertToSubCurrency(amount) } });
+  }, [createPaymentIntent, amount]);
+
+  const handlePaymentSucceeded = async (variables: any) => {
+    await createPayment({
+      variables: {
+        createPaymentDto: variables,
+      },
+    });
+    await createInvoice({
       variables: {
         createInvoiceDto: {
           userId: Number(currentUser?.id),
-          price: totalPrice,
-          name: `Invoice ${selectedCart.name}`,
-          pid: _.map(products, (p: CartProducts) => Number(p.product.id)),
+          name: 'Invoice',
+          price: amount,
+          pid: listProductsCheckout.map((p) => p.id),
         },
       },
     });
   };
 
+  const handleSubmit = async (e: any) => {
+    const { fullName, email } = e;
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      message.error(submitError.message ?? 'Something went wrong');
+      return;
+    }
+
+    const createPaymentDto = {
+      clientName: fullName,
+      clientEmail: email,
+      clientSecret,
+      uid: Number(currentUser?.id),
+      paymentId: '',
+      paymentMethod: [PaymentMethod.CART],
+      products: listProductsCheckout,
+      status: StatusPayment.SUCCEEDED,
+      amount: convertToSubCurrency(amount),
+      currency: Currency.USD,
+    };
+    handlePaymentSucceeded(createPaymentDto);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      clientSecret,
+      confirmParams: {
+        return_url: 'http://localhost:3000/order/payment-success',
+        payment_method_data: {
+          billing_details: {
+            name: fullName,
+            email,
+          },
+        },
+      },
+    });
+    if (error) {
+      message.error(error.message ?? 'Something went wrong');
+      return;
+    }
+  };
+
   return (
-    <Modal
-      title={<div className='text-center mb-4 tracking-wide text-2xl'>Checkout: {selectedCart.name} Cart</div>}
-      closable={false}
-      footer={[
-        <Button key={'confirm-checkout'} type='primary' onClick={() => handleCheckout()} loading={createInvoiceLoading}>
-          Confirm
-        </Button>,
-        <Button key={'cancel-checkout'} onClick={() => setIsVisitableCheckout(false)}>
-          Cancel
-        </Button>,
-      ]}
-      open={isVisitableCheckout}
-      onClose={() => setIsVisitableCheckout(false)}
+    <Form
+      onFinish={(e) => handleSubmit(e)}
+      className='w-2/3 p-5 border rounded-md border-slate-200'
+      labelAlign='left'
+      labelCol={{ span: 5 }}
+      form={form}
     >
-      <div className='*:leading-8 *:text-lg *:mb-4 *:pb-2 *:border-b *:border-b-slate-200'>
-        <p className='flex justify-between *:font-medium'>
-          <span>Total Product:</span> <span className='opacity-75'>{_.sumBy(products, (p: any) => p.quantity)}</span>{' '}
-        </p>
-        <p className='flex justify-between *:font-medium'>
-          <span>Total Price:</span>{' '}
-          <span className='opacity-75'>$ {_.sumBy(products, (p: any) => p.product.price * p.quantity).toFixed(2)}</span>
-        </p>
-        <p className='flex justify-between *:font-medium'>
-          <span>Topic:</span> <span className='opacity-75'>{selectedCart.topic}</span>
-        </p>
-        <p className='flex justify-between *:font-medium'>
-          <span>Discount</span> <i className='opacity-75'>Comming soon!!!</i>
-        </p>
-      </div>
-    </Modal>
+      <Form.Item rules={requiredField('Full Name')} label='Full Name' name={'fullName'}>
+        <Input placeholder='Full Name' />
+      </Form.Item>
+      <Form.Item rules={emailRules} label='Email' name='email'>
+        <Input placeholder='Email' />
+      </Form.Item>
+      <Form.Item rules={requiredField('Cart Information')} name={'cartInformation'}>
+        {clientSecret && <PaymentElement options={paymentElementOptions} />}
+      </Form.Item>
+      <Form.Item className='mt-4'>
+        <Button htmlType='submit' type='primary' className='w-full'>
+          Payment
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
