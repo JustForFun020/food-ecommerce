@@ -1,5 +1,6 @@
 'use client';
 
+import _ from 'lodash';
 import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button, Result, Space, Steps, Tooltip } from 'antd';
@@ -7,6 +8,9 @@ import type { StepsProps } from 'antd';
 import Header from '../Header';
 import { useCustomRouter } from '@/lib/hook/useCustomRouter';
 import { useQuery } from '@apollo/client';
+import { GET_INVOICE_BY_ID_QUERY } from '@/lib/graphql/query';
+import { Invoice } from '@/utils/types/cart';
+import { StatusPayment } from '@/utils/enum/payment';
 
 const stepItem: StepsProps['items'] = [
   {
@@ -61,6 +65,23 @@ const PaymentSuccess: React.FC = () => {
   const searchParams = useSearchParams();
   const pricePayment = searchParams.get('price');
   const invoiceId = searchParams.get('invoiceId');
+
+  const { loading } = useQuery(GET_INVOICE_BY_ID_QUERY, {
+    variables: { id: Number(invoiceId) },
+    skip: !invoiceId,
+    onCompleted: (data) => {
+      const res: Invoice = _.get(data, 'getInvoiceById', {});
+      if (res.status === StatusPayment.CONFIRMED) {
+        setCurrentStep(2);
+      } else if (res.status === StatusPayment.PENDING) {
+        setCurrentStep(1);
+      }
+    },
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main>

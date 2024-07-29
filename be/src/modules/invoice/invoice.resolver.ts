@@ -55,4 +55,10 @@ export class InvoiceResolver {
   ) {
     return await this.invoiceService.createPayment(createPaymentDto);
   }
+
+  @Roles(['USER'])
+  @Query(() => Invoice)
+  async getInvoiceById(@Args('id') id: number) {
+    return await this.invoiceService.getInvoiceById(id);
+  }
 }

@@ -1,12 +1,13 @@
+import _ from 'lodash';
+import React from 'react';
+import moment from 'moment';
 import { DELETE_INVOICE_MUTATION, TOGGLE_STATUS_INVOICE_MUTATION } from '@/lib/graphql/mutation';
-import { GET_ALL_INVOICE_QUERY } from '@/lib/graphql/query';
+import { GET_ALL_INVOICE_QUERY, GET_INVOICE_BY_ID_QUERY } from '@/lib/graphql/query';
 import { Invoice } from '@/utils/types/cart';
 import { Product } from '@/utils/types/product';
 import { useMutation } from '@apollo/client';
+import type { MutationHookOptions } from '@apollo/client';
 import { Button, Drawer, Image, message, Space, Tag } from 'antd';
-import _ from 'lodash';
-import moment from 'moment';
-import React from 'react';
 
 interface UpdateInvoiceProps {
   selectedInvoice: Invoice;
@@ -22,26 +23,30 @@ const UpdateInvoice: React.FC<UpdateInvoiceProps> = ({
   const { products, status, createdAt } = selectedInvoice;
   const tagColor = status === 'Pending' ? 'orange' : 'green';
 
-  const [toggleStatusInvoice, { loading: toggleStatusInvoiceLoading }] = useMutation(TOGGLE_STATUS_INVOICE_MUTATION, {
-    refetchQueries: [{ query: GET_ALL_INVOICE_QUERY }],
-    onCompleted: () => {
-      setIsVisitableDrawerUpdate(false);
-      message.success('Update status invoice successfully');
-    },
-    onError: (error) => {
-      message.error(error.message);
-    },
-  });
-  const [deleteInvoice, { loading: deleteInvoiceLoading }] = useMutation(DELETE_INVOICE_MUTATION, {
-    refetchQueries: [{ query: GET_ALL_INVOICE_QUERY }],
-    onCompleted: () => {
-      setIsVisitableDrawerUpdate(false);
-      message.success('Delete invoice successfully');
-    },
-    onError: (error) => {
-      message.error(error.message);
-    },
-  });
+  const mutateOptions: (messageSuccess: string) => MutationHookOptions = (messageSuccess: string) => {
+    return {
+      refetchQueries: [
+        { query: GET_ALL_INVOICE_QUERY },
+        { query: GET_INVOICE_BY_ID_QUERY, variables: { id: Number(selectedInvoice.id) } },
+      ],
+      onCompleted: () => {
+        setIsVisitableDrawerUpdate(false);
+        message.success(messageSuccess);
+      },
+      onError: (error) => {
+        message.error(error.message);
+      },
+    };
+  };
+
+  const [toggleStatusInvoice, { loading: toggleStatusInvoiceLoading }] = useMutation(
+    TOGGLE_STATUS_INVOICE_MUTATION,
+    mutateOptions('Toggle status invoice successfully'),
+  );
+  const [deleteInvoice, { loading: deleteInvoiceLoading }] = useMutation(
+    DELETE_INVOICE_MUTATION,
+    mutateOptions('Delete invoice successfully'),
+  );
 
   const handleConfirmInvoice = () => {
     toggleStatusInvoice({ variables: { id: Number(selectedInvoice.id) } });

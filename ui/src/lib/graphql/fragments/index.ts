@@ -9,6 +9,7 @@ export const USER_FIELD = gql`
     avatar
     username
     invoices {
+      id
       name
       price
       createdAt

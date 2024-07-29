@@ -92,6 +92,13 @@ export class InvoiceService {
     return invoice;
   }
 
+  async getInvoiceById(id: number) {
+    return await this.invoiceRepository.findOne({
+      where: { id },
+      relations: ['user', 'products', 'products.images'],
+    });
+  }
+
   async deleteInvoice(id: number) {
     const invoice = await this.invoiceRepository.findOne({ where: { id } });
     try {

@@ -3,6 +3,7 @@ import { getAllProducts } from './product/getAllProduct';
 import { getProductByName } from './product/getProductByName';
 import { getProductById } from './product/getProductById';
 import { getProductsByCategory } from './product/getProductByCategory';
+import { searchProduct } from './product/searchProduct';
 
 export const GET_ALL_PRODUCTS_QUERY = getAllProducts;
 export const GET_PRODUCT_BY_ID_QUERY = getProductById;
@@ -35,6 +36,7 @@ export const GET_ALL_USER_CART = getAllUserCarts;
 
 // Invoice query
 import { getAllInvoice } from './invoice/getAllInvoices';
-import { searchProduct } from './product/searchProduct';
+import { getInvoiceById } from './invoice/getInvoiceById';
 
 export const GET_ALL_INVOICE_QUERY = getAllInvoice;
+export const GET_INVOICE_BY_ID_QUERY = getInvoiceById;
