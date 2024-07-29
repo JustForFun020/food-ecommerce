@@ -113,7 +113,7 @@ const Checkout: React.FC<CheckoutProps> = ({ amount }) => {
       elements,
       clientSecret,
       confirmParams: {
-        return_url: 'http://localhost:3000/order/payment-success',
+        return_url: `http://localhost:3000/order/payment-success?price=${amount}`,
         payment_method_data: {
           billing_details: {
             name: fullName,
