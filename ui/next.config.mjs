@@ -14,6 +14,11 @@ const nextConfig = {
   env: {
     NEXT_STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
     NEXT_STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    NEXT_POWER_BI_REPORT_ID: process.env.POWER_BI_REPORT_ID,
+    NEXT_POWER_BI_GROUP_ID: process.env.POWER_BI_GROUP_ID,
+    NEXT_POWER_BI_EMBED_CONFIG: process.env.POWER_BI_EMBED_CONFIG,
+    NEXT_POWER_BI_ACCESS_TOKEN: process.env.POWER_BI_ACCESS_TOKEN,
+    NEXT_POWER_BI_DATASET_ID: process.env.POWER_BI_DATASET_ID,
   },
   reactStrictMode: false,
   images: {
