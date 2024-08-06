@@ -6,11 +6,8 @@ import { useAuththor } from '@/lib/hook/useAuththor';
 import { UPDATE_CART_MUTATION } from '@/lib/graphql/mutation';
 import { useMutation } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
-import { setBasicInformationCart, setProductQuantity } from '@/lib/redux/cart/reducer';
-import { AppDispatch, RootState } from '@/utils/types/redux';
-import { connect, ConnectedProps } from 'react-redux';
 
-interface EditCartProps extends PropsFromRedux {
+interface EditCartProps {
   selectedCart: Cart;
   isVisitableEditCart: boolean;
   setIsVisitableEditCart: React.Dispatch<React.SetStateAction<boolean>>;
@@ -157,22 +154,4 @@ const EditCart: React.FC<EditCartProps> = ({ selectedCart, isVisitableEditCart, 
   );
 };
 
-const mapStateToProps = (state: RootState) => {
-  return {
-    cartInfo: state.cartReducer.cartInformation,
-    cartProducts: state.cartReducer.cartProducts,
-  };
-};
-
-const mapDispatchToProps = (dispatch: AppDispatch) => {
-  return {
-    setBasicInformationCart: (cartInfo: { name: string; topic: string; description: string }) =>
-      dispatch(setBasicInformationCart(cartInfo)),
-    setProductQuantity: (product: CartProducts[]) => dispatch(setProductQuantity(product)),
-  };
-};
-
-const connector = connect(mapStateToProps, mapDispatchToProps);
-type PropsFromRedux = ConnectedProps<typeof connector>;
-
-export default connector(EditCart);
+export default EditCart;

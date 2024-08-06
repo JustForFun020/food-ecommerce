@@ -9,9 +9,17 @@ export const USER_FIELD = gql`
     avatar
     username
     invoices {
+      id
       name
       price
       createdAt
+      products {
+        name
+        price
+        images {
+          imageUrl
+        }
+      }
     }
     carts {
       name

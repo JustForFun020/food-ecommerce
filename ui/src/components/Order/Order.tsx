@@ -5,22 +5,30 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Header from '../Header';
 import '@/style/order.css';
 import Link from 'next/link';
-import { Button, Layout, message, Tag } from 'antd';
-import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, FloatButton, Layout, message, Tag } from 'antd';
+import { CheckOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_ALL_USER_CART } from '@/lib/graphql/query';
 import { useAuththor } from '@/lib/hook/useAuththor';
 import { DELETE_CART_MUTATION, DELETE_PRODUCT_FROM_CART_MUTATION } from '@/lib/graphql/mutation';
-import { Cart } from '@/utils/types/cart';
+import { Cart, CartProducts } from '@/utils/types/cart';
 import EditCart from './EditCart';
-import Checkout from './Checkout';
+import CreateCart from './CreateCart';
+import { AppDispatch, RootState } from '@/utils/types/redux';
+import { setCartCheckout } from '@/lib/redux/cart/reducer';
+import { connect, ConnectedProps } from 'react-redux';
+import { useCustomRouter } from '@/lib/hook/useCustomRouter';
+import EmptyCart from './EmptyCart';
 
-const Order = () => {
+interface OrderProps extends PropsFromRedux {}
+
+const Order: React.FC<OrderProps> = ({ setCartCheckout }) => {
   const [isVisitableEditCart, setIsVisitableEditCart] = useState(false);
-  const [isVisitableCheckout, setIsVisitableCheckout] = useState(false);
+  const [isVisitableCreateCart, setIsVisitableCreateCart] = useState(false);
   const [selectedCart, setSelectedCart] = useState<Cart>({} as Cart);
 
   const { currentUser, error: unAuthorError } = useAuththor();
+  const { navigateTo } = useCustomRouter();
 
   const { loading, data: getAllUserCarts } = useQuery(GET_ALL_USER_CART, {
     variables: {
@@ -67,21 +75,6 @@ const Order = () => {
     });
   };
 
-  const renderEmptyCartLayout = () => {
-    return (
-      <div className='flex flex-col items-center justify-center'>
-        <h1 className='text-5xl font-bold mb-3 tracking-wide'>Your cart is empty</h1>
-        <p className='text-gray-500'>Looks like you have not added anything to your cart yet</p>
-        <Link
-          className='mt-4 p-4 border border-slate-400 bg-[rgba[0,0,0,0.1]] hover:bg-sky-400 hover:border-none hover:text-white rounded-lg transition-all duration-200'
-          href={'/explore'}
-        >
-          Start shopping
-        </Link>
-      </div>
-    );
-  };
-
   if (loading) return <div>Loading...</div>;
 
   return (
@@ -89,13 +82,19 @@ const Order = () => {
       <header className='pr-8 pl-6 pt-6 pb-6'>
         <Header />
       </header>
+      <FloatButton
+        icon={<PlusCircleOutlined />}
+        type='primary'
+        tooltip='Create Cart'
+        onClick={() => setIsVisitableCreateCart(true)}
+      />
       <div
         className={`
         ${_.isEmpty(carts) && 'order__content'} min-h-screen w-full mt-6 pr-20 pl-20
         `}
       >
         {_.isEmpty(carts) ? (
-          renderEmptyCartLayout()
+          <EmptyCart />
         ) : (
           <Fragment>
             {_.map(carts, (cart, index) => {
@@ -121,7 +120,10 @@ const Order = () => {
                       <Button
                         icon={<CheckOutlined />}
                         type='primary'
-                        onClick={() => handleVisitCartModel(cart, setIsVisitableCheckout)}
+                        onClick={() => {
+                          setCartCheckout(cart.cartProducts);
+                          navigateTo(`/order/payment?price=${total}`);
+                        }}
                       >
                         Checkout
                       </Button>
@@ -180,13 +182,26 @@ const Order = () => {
         setIsVisitableEditCart={setIsVisitableEditCart}
         selectedCart={selectedCart}
       />
-      <Checkout
-        selectedCart={selectedCart}
-        isVisitableCheckout={isVisitableCheckout}
-        setIsVisitableCheckout={setIsVisitableCheckout}
+      <CreateCart
+        isVisitableCreateCart={isVisitableCreateCart}
+        setIsVisitableCreateCart={setIsVisitableCreateCart}
+        uid={Number(currentUser.id)}
       />
     </main>
   );
 };
 
-export default Order;
+const mapStateToProps = (state: RootState) => {
+  return {};
+};
+
+const mapDispatchToProps = (dispatch: AppDispatch) => {
+  return {
+    setCartCheckout: (cart: CartProducts[]) => dispatch(setCartCheckout(cart)),
+  };
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+export default connector(Order);

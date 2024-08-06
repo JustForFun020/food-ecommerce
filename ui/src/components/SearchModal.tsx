@@ -11,9 +11,10 @@ import { useDebounceValue } from 'usehooks-ts';
 interface SearchModalProps {
   isListSearchVisible: boolean;
   setListSearchVisible: (value: boolean) => void;
+  handleClickProduct: (product: Product) => void;
 }
 
-const SearchModal = ({ isListSearchVisible, setListSearchVisible }: SearchModalProps) => {
+const SearchModal = ({ isListSearchVisible, setListSearchVisible, handleClickProduct }: SearchModalProps) => {
   const [defaultDebounceValue, setDefaultDebounceValue] = useState('');
   const [debouncedValue, setValue] = useDebounceValue(defaultDebounceValue, 500);
 
@@ -74,7 +75,7 @@ const SearchModal = ({ isListSearchVisible, setListSearchVisible }: SearchModalP
           {listSearchProduct.map((product) => (
             <li
               key={product.id}
-              onClick={() => router.push(`/product/${product.name}`)}
+              onClick={() => handleClickProduct(product)}
               className='mb-2 pb-2 border-b border-b-slate-950 *:text-lg shadow-md cursor-pointer flex justify-between items-center hover:opacity-100 hover:font-medium'
             >
               <span className='w-2/3'>{product.name}</span>

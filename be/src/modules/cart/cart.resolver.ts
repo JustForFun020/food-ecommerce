@@ -8,6 +8,7 @@ import { CartProducts } from '../../common/entity/cartEntity/cart-products.entit
 import { Cart } from '../../common/entity/cartEntity/cart.entity';
 import { CreateCartProductsDto } from '../../common/dto/cartDto/create-cart-products.dto';
 import { UpdateCartDto } from 'src/common/dto/cartDto/update-cart.dto';
+import { CreateCartDto } from 'src/common/dto/cartDto/create-cart.dto';
 
 @UseGuards(UserRolesGuard)
 @Roles(['USER'])
@@ -48,5 +49,10 @@ export class CartResolver {
   @Mutation(() => Cart)
   async updateCart(@Args('updateCartDto') updateCartDto: UpdateCartDto) {
     return await this.cartService.updateCart(updateCartDto);
+  }
+
+  @Mutation(() => [CartProducts])
+  async createCart(@Args('createCartDto') createCartDto: CreateCartDto) {
+    return await this.cartService.createCart(createCartDto);
   }
 }

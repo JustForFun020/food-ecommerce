@@ -71,6 +71,7 @@ export class ProductService {
 
     const newCategory = this.categoriesRepository.create({
       name: category.name,
+      description: '',
     });
     return this.categoriesRepository.save(newCategory);
   }
@@ -80,7 +81,7 @@ export class ProductService {
       tagNames.map(async (name) => {
         let tag = await this.productTagRepository.findOne({ where: { name } });
         if (!tag) {
-          tag = this.productTagRepository.create({ name });
+          tag = this.productTagRepository.create({ name, description: '' });
           tag = await this.productTagRepository.save(tag);
         }
         return tag;
